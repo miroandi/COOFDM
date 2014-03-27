@@ -1,0 +1,14 @@
+% currentFolder = 'D:\user\haeyoung\Project\2013\matlab\';
+currentFolder = [ pwd, '\'] ;
+addpath( [ currentFolder 'GUI'] );
+addpath( [ currentFolder 'Analysis']  );
+addpath( [ currentFolder 'Fiber' ] );
+addpath( [ currentFolder 'Gen_AWG'] );
+addpath( [ currentFolder 'Init_files'] );
+addpath( [ currentFolder 'Optisys' ] );
+addpath( [ currentFolder 'PAPR'] );
+addpath( [ currentFolder 'Receiver'] );
+addpath( [ currentFolder 'Run_files' ] );
+addpath( [ currentFolder 'Transmitter'] );
+addpath( [ currentFolder 'Common' ] );
+addpath( [ currentFolder 'MeasurementTool' ] );
