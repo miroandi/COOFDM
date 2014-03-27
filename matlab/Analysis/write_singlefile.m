@@ -1,0 +1,29 @@
+function write_singlefile( dir, sim, params, bit_err, Q, bit_err_sim, err_num )
+
+  km=1000;
+  str1='matlab';
+    if ( sim.en_read_ADS ==0 && sim.en_gen_ADS==0 )
+        str1='matlab';
+    end
+    str2='100kHz_';
+    if ( sim.nolinewidth == 1)
+        str2='0kHz_';
+    end
+    matfile =[ dir, str1,'_', ...
+              num2str(params.NFFT), '_',  ...
+              num2str( 2^params.Nbpsc ),'QAM_', ...
+              num2str(sim.precomp_en),'prec_', ...
+              num2str(sim.cfotype),'cfo_', ...
+              str2, ...
+              num2str(sim.FiberLength/km),'km_', ...
+              num2str(sim.subband),'bands_', ...
+              num2str(sim.MAXSIM),'sim', ...              
+              ]; 
+    
+    dlmwrite( matfile, bit_err,'precision', 8); 
+    dlmwrite( matfile, Q,'-append','precision', 8); 
+    dlmwrite( matfile, bit_err_sim,'-append','precision', 8); 
+    dlmwrite( matfile, err_num,'-append','precision', 8); 
+%     dlmwrite( matfile, totbiterror,'-append','precision', 8); 
+       
+end 

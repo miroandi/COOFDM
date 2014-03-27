@@ -1,0 +1,12 @@
+fs = 10^-15 ;
+ps = 10^-12;
+nm = 10^-9 ;
+THz = 10 ^ 12 ;
+kHz = 1e3;
+km = 10^3;
+mW = 1e-3;
+um = 1e-6;
+W = 1;
+ppm = 1e-6;
+c = 2.99e8;  % Speed of light 
+Z0 = 377 ;                                       % ohm
