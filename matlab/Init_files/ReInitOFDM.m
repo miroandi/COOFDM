@@ -262,10 +262,13 @@ if ( sim_new.cfotype ==5 || sim_new.cfotype == 8  )
     params_new.STF(sim.tone) = 1 +1j ;
     
 end 
+ if ( params_new.NOFDE == 0 || sim_new.precomp_en == 1 )
+     sim_new.en_OFDE =0;
+ end
 
-if ( sim_new.multi_level == 1 )
-    sim_new.ofde =1;
-end
+% if ( sim_new.multi_level == 1 )
+%     sim_new.ofde =1;
+% end
 sim_new.span = sim_new.FiberLength/ edfa_new.length;
 
 sim_new.fiber = fiber_new;
@@ -274,7 +277,7 @@ sim_new.edfa = edfa_new;
 sim_new.lolaser = lolaser_new;
 sim_new.PD = PD;
 [sim_new.Launchpower, sim_new.LP_dB]=   GetLaunchPwr( laser, sim,  MZmod,  txedfa );
-% sim.en_disp_env=1;
+% sim.en_disp_env=0;
 %% Simulation summary
 if ( sim.en_disp_env )
     disp2( logfile,['Fixed ', num2str( sim_new.fixed_sim)]);
@@ -298,17 +301,17 @@ if ( sim.en_disp_env )
     % disp2( logfile,['TX Laser power ', num2str(10*log10( launch_power/mW)   ),' dBm']);     
     % disp2( logfile,['TX Gain ', num2str(10*log10(laser.launch_power/mW)   ),' dBm']);       
     disp2( logfile,['Modulation ', num2str( 2^params_new.Nbpsc ), 'QAM ']);
-    disp2( logfile,['Datarate ', num2str( datarate / 10^9  ), 'Gbps ']);              
-    disp2( logfile,['Datarate ', num2str( normdatarate / 10^9  ), 'Gbps ']);
-    disp2( logfile,['FFT size ', num2str( params_new.NFFT ), ' ', 'CP cnt', num2str(params_new.NFFT * params_new.CPratio)]);
+    disp2( logfile,['Datarate ', num2str( datarate / 10^9  ), ' Gbps ']);              
+    disp2( logfile,['Datarate ', num2str( normdatarate / 10^9  ), ' Gbps ']);
+    disp2( logfile,['FFT size ', num2str( params_new.NFFT ), ' ', ' CP cnt', num2str(params_new.NFFT * params_new.CPratio)]);
     disp2( logfile,['syncpoint ', num2str(sim_new.syncpoint ), ' ']);
     disp2( logfile,['Precomp enable ', num2str(  sim_new.precomp_en ), '. subband ', num2str(sim_new.subband)]);
     disp2( logfile,['CPE enable ', num2str(  sim_new.enCPEcomp )]);
     disp2( logfile,['CFO type ', num2str(  sim_new.cfotype)] ); 
     disp2( logfile,['Symbol sync search ', num2str(  sim_new.en_find_sync)] );
     disp2( logfile,['CS sync search ', num2str(  sim_new.en_find_cs)] );
-    disp2( logfile,['OFDE size ', num2str( params_new.NOFDE )]);
-    
+    disp2( logfile,['OFDE size ', num2str( params_new.NOFDE )]);    
     disp2(logfile,datestr(now,'HH:MM /mm/dd/yy'))
+
 
 end

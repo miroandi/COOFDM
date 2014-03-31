@@ -4,8 +4,11 @@ function [ channel_out,fsync_point ] = NRxSync( channel_in, params, sim)
  
     %% ideal synchronization     
     if (   sim.precomp_en == 1)        
-		delay_diff =  sim.delay(params.NFFT) - sim.delay(1);
-        STFidx =( sim.delay(1)+(params.NSTF+params.MIMO_emul *2 )*params.lenSTF + round( delay_diff/2-2 ) + 2 )* params.RxOVERSAMPLE; 
+% 		delay_diff =  sim.delay(params.NFFT) - sim.delay(1);
+        delay_diff =    sim.delay(1);
+%         STFidx =( sim.delay(1)+(params.NSTF+params.MIMO_emul *2
+%         )*params.lenSTF + round( delay_diff/2-2 ) + 2 )* params.RxOVERSAMPLE; 
+        STFidx =( sim.delay(1)+(params.NSTF+params.MIMO_emul *2 )*params.lenSTF )* params.RxOVERSAMPLE; 
     else        
         STFidx =( (params.NSTF+params.MIMO_emul *2 )*params.lenSTF   )* params.RxOVERSAMPLE; 
     end

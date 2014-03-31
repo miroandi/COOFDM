@@ -19,6 +19,10 @@ function [ out_SCFOcomp,cfo_phase, cfo_phase_16,cfo_phase_17 , iqamp] = ...
         else
             cfo_phase=  0;
         end
+    else
+        if ( sim.enSCFOcomp == 0  )
+            cfo_phase = sim.exp_cfo;
+        end
     end
     cfo_phase = cfo_phase /params.RxOVERSAMPLE;    
     

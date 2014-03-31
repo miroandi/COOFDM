@@ -55,7 +55,7 @@ function [ out, phase ] = TXOFDE2(in1, in2, fiber, params, sim, Overlap, Freqshi
     end
         
     tmp = - ( w .* w ) + ( w .* freq_shift * 2* pi * MaxFreq/params.NOFDE );
-    DHat = 1/2*fiber.Beta2 *( (tmp)  ) * sim.FiberLength  ;
+    DHat = 1/2*fiber.Beta2 *( (tmp)  ) * sim.FiberLength *sim.ofde ;
     
     FFTPoint = params.NOFDE/Overlap/2;
 

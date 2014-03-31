@@ -22,12 +22,11 @@ tone=10;
 syncpoint=2;
 Nbpsc=4;
 SampleTime =1/26/GHz *(Nbpsc/4 );
-SampleTime = 1/(10*GHz);
 NOFDE =1024;
 NFFT=128; precomp_en =0;  CPratio =1/8;
 %%
 
-defaultStream = RandStream.getDefaultStream;
+defaultStream = RandStream.getGlobalStream;
 savedState = defaultStream.State;
 sim_mode =4;
 sim_mode1 = 0 ;
@@ -35,10 +34,8 @@ maxsim=50;
 dirdlm = [ pwd '\'];;
 sdirdlm = [dirdlm 'Single\'];
 logfile = [dirdlm '4QAMlog.txt'];
-
-
-% system (['rm ', logfile]);
 delete(logfile);
+cd(dirdlm);
 
 %% sim_mode=1
 if (sim_mode == 1 || sim_mode1 == 100 ) 

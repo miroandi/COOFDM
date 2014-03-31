@@ -1,4 +1,4 @@
-function [sim, params, MZmod,fiber,laser, lolaser, txedfa, edfa, rxedfa, PD]=  InitOFDM_11Sept( NFFT, ovsampling, sampletime )
+function [sim, params, MZmod,fiber,laser, lolaser, txedfa, edfa, rxedfa, PD]=  InitOFDM_FFTSize( NFFT, ovsampling, sampletime )
 %%  Clear
 
 % clc; clear all; close all;
@@ -87,7 +87,7 @@ params.LTF = zeros(1, params.NFFT);
 if ( params.NFFT == 2048 )
     
     sim.ISFASize=7;
-     MaxIdx =   820 ;% 112Gbps(Nominal)
+     MaxIdx =   784 ;% 112Gbps(Nominal)
     if ( MaxIdx > 960 )        
         SubcarrierIndex1 = [12:127 129:255  257:447 449:639 641:767  769:959 961:MaxIdx] ;         
         PilotIndex1 = [  128   256   448   640   768   960 ] ;   
@@ -190,7 +190,7 @@ if ( params.NFFT == 2048 )
 %     params.NLTF =1;
 end 
 if ( params.NFFT == 1024 )
-    MaxIdx =  410 ;% 112Gbps(Nominal)
+    MaxIdx =  394 ;% 112Gbps(Nominal)
     if ( MaxIdx > 480 )        
         SubcarrierIndex1 = [6:63 65:127  129:223 225:319 321:383  385:479 481:MaxIdx] ;         
         PilotIndex1 = [  64   128   224   320   384   480 ] ;   
@@ -286,7 +286,7 @@ if ( params.NFFT == 1024 )
 %     params.NLTF =1;
 end 
 if ( params.NFFT == 512 )
-    MaxIdx =  210 ;% 112Gbps(Nominal)
+    MaxIdx =  202 ;% 112Gbps(Nominal)
     if ( MaxIdx > 240 )        
         SubcarrierIndex1 = [6:31 33:63  65:111 113:159 161:191 193:239 241:MaxIdx] ;
         PilotIndex1 = [  32   64  112   160   192   240 ];   
@@ -350,7 +350,7 @@ if ( params.NFFT == 512 )
 %     params.NLTF =1;
 end 
 if (params.NFFT == 256 ) 
-    MaxIdx =109 ;
+    MaxIdx =105 ;
     if ( MaxIdx > 96 )        
         SubcarrierIndex1 = [5:15 17:31  33:47 49:63 65:95 97:MaxIdx] ;
     else
@@ -394,7 +394,7 @@ if (params.NFFT == 256 )
 end
 
 if ( params.NFFT == 128 )
-    MaxIdx =  55;% 42;
+    MaxIdx =  53;% 42;
     if ( MaxIdx > 40 )        
         SubcarrierIndex1 = [3:7 9:23 25:39  41:MaxIdx] ;
     else
@@ -481,7 +481,7 @@ end
 % end
 
 if ( params.NFFT == 64 )
-    MaxIdx =28;
+    MaxIdx =27;
     if ( MaxIdx > 24 ) 
 %         SubcarrierIndex1 = [2:7 9:15  17:23 25:MaxIdx] ; 
         SubcarrierIndex1 = [2:7 9:15  17:MaxIdx] ;   
@@ -723,7 +723,7 @@ sim.preemphasis_H_en =0;
 sim.wavelength =0;
 params.MIMO_emul =1;
 sim.enIQbal =1;
-params.NOFDE =1024;
+params.NOFDE =2048;
 params.en_DFT_S = 0;
 %%
 sim.DCoffst =   -(-7.1443e-004 -0.0010j );
@@ -751,7 +751,7 @@ sim.enIQbal =0 ;
 sim.decision_feedback_cpe  =1;
 sim.PMDtype = 0;
 fiber.PMD = 0 * 50*ps;
-sim.cetype=1;
+sim.cetype=7;
 %% BIT ALLOC 1
 % 
 % params.Nbpsc_sc([1,  100]) = 2;

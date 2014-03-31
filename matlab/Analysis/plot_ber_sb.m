@@ -56,6 +56,7 @@ function  plot_ber_sb( sim, params, X_coor, Y1, Y2 , edfa, laser )
     if ( sim.mode ==  3 )      xlabel1='EDFA NF ' ;  str1=['Fiber length' num2str(sim.FiberLength/km) 'km '];   end
     if ( sim.mode ==  5 )      xlabel1='Fiber Length(km) ' ;  str1=['SNR ' num2str( sim.SNR(1)) 'dB '];   end    
     if ( sim.mode ==  6 )      xlabel1='CFO frequency '  ;  str1=['Fiber length' num2str(sim.FiberLength/km) 'km '];   end
+    if ( sim.mode ==  7 )      xlabel1='NLC _COEF'  ;  str1=['Fiber length' num2str(sim.FiberLength/km) 'km '];   end
     if ( laser.freqoff ~= 0 && sim.mode ~= 6 ) 
         str2 = ['Freq. offset = ', num2str(laser.freqoff /params.SampleTime /MHz), 'MHz' ];
     else

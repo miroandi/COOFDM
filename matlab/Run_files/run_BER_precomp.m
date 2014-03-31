@@ -3,7 +3,7 @@ MHz = 1e6;
 mW =1e-3;
 if ( sim_mode ~= 0 )
     
-     [sim, params, MZmod,fiber,laser, iolaser, txedfa, edfa, rxedfa, PD]= InitOFDM_11Sept(NFFT, 1,SampleTime );
+     [sim, params, MZmod,fiber,laser, iolaser, txedfa, edfa, rxedfa, PD]= InitOFDM_FFTSize(NFFT, 1,SampleTime );
 
    sim.tone = tone * params.NFFT/128;
     sim.en_disp_env =1 ;
@@ -37,7 +37,7 @@ if ( sim_mode ~= 0 )
     params.CPratio =CPratio;
    params.MIMO_emul = 0;
    sim.en_find_cs=0;
-   params.NSymbol = 50;
+%    params.NSymbol = 50;
 % fiber.Npol =params.RXstream ;   
     run('../Optisys/init_optisys.m');
 end 
@@ -53,7 +53,7 @@ params.NOFDE = NOFDE;
  else
      sim.en_OFDE = 0;
  end
-
+ 
 %% Simulation test set 
 % 1 : Fiber length  
 % 2 : OSNR  
