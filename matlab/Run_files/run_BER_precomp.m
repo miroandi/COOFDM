@@ -5,8 +5,7 @@ if ( sim_mode ~= 0 )
     
      [sim, params, MZmod,fiber,laser, iolaser, txedfa, edfa, rxedfa, PD]= InitOFDM_FFTSize(NFFT, 1,SampleTime );
 
-   sim.tone = tone * params.NFFT/128;
-    sim.en_disp_env =1 ;
+%    sim.tone = tone * params.NFFT/128;
     sim.MAXSIM= maxsim;
     % 1: Current design, 2: Ref[2] ,3:Idea 2 ,4:Idea 2 -1, 5:Idea 1 6: Ref[8] 
     sim.cfotype =cfotype; 
@@ -16,7 +15,8 @@ if ( sim_mode ~= 0 )
     sim.nophase=1;
     sim.nolinewidth=nolinewidth;
     sim.en_AWGN = en_AWGN ;
-    sim.SNR = [ 16; 16];
+    snrin = osnr2snr(sim.osnrin, sim.oversample/params.SampleTime);
+    sim.SNR = [ snrin; snrin;];
     sim.backtoback = b2b;
     sim.FiberLength = FiberLength  ;
     sim.mode = sim_mode; % 0: single simulation 1 : length, 2: SNR  4: bit (fixed sim) 
@@ -37,6 +37,7 @@ if ( sim_mode ~= 0 )
     params.CPratio =CPratio;
    params.MIMO_emul = 0;
    sim.en_find_cs=0;
+   txedfa.gain_dB =  gain_dB; 
 %    params.NSymbol = 50;
 % fiber.Npol =params.RXstream ;   
     run('../Optisys/init_optisys.m');
@@ -53,7 +54,7 @@ params.NOFDE = NOFDE;
  else
      sim.en_OFDE = 0;
  end
- 
+ sim.en_OFDE = en_OFDE;
 %% Simulation test set 
 % 1 : Fiber length  
 % 2 : OSNR  
@@ -98,7 +99,8 @@ for SNRsim=1:length(X_coor)
         sim.SNR =[X_coor(SNRsim);X_coor(SNRsim);];
     end
     if ( sim.mode == 1 || sim.mode == 5  ) 
-        sim.FiberLength  = (X_coor(SNRsim))*km;        
+        sim.FiberLength  = (X_coor(SNRsim))*km;
+        sim.span = sim.FiberLength/ edfa.length;
     end 
     if ( sim.mode == 3 ) 
         txedfa.gain_dB =X_coor(SNRsim);
@@ -149,8 +151,9 @@ for SNRsim=1:length(X_coor)
                      MIMO_ofdmout(2,:) =[ zeros(1, sim.zeropad3)  ofdmout(1,:) zeros(1, sim.zeropad1+sim.zeropad2) ];
                      ofdmout = MIMO_ofdmout;
                 end
+                ofdmout_jitter = TimeJitter( ofdmout, params.SampleTime, jitter );    
                 [ovoptofdmout, txphase_noise] =  ...
-                    elec2opt1( ofdmout, laser,  MZmod, txedfa, sim,params );
+                    elec2opt1( ofdmout_jitter, laser,  MZmod, txedfa, sim,params );
 
 
                 ovoptofdmout = NLowPassFilter1( ovoptofdmout, sim.txfilter, sim.txLPF_en1 );
@@ -176,8 +179,9 @@ for SNRsim=1:length(X_coor)
              
 
             noisyreceivein1 = noisyreceivein(:,sim.zerohead2 +1:size(noisyreceivein,2)) ;
+            noisyreceivein1_jitter = TimeJitter( noisyreceivein1, params.SampleTime, jitter );   
             [demapperout, fftout, H_modified, cfo_phase, commonphase, snr] = ...
-                RxMain( noisyreceivein1, params, sim, fiber  );
+                RxMain( noisyreceivein1_jitter, params, sim, fiber  );
 
             %================= Analysis BER and PAPR ================= 
             [frame, idealout,EVM_dB_sc, EVM_dB_sym ] = ...
@@ -192,7 +196,7 @@ for SNRsim=1:length(X_coor)
                 diff_rtx =[ diff_rtx ;  frame.diff_rtx ];
             end
             
-            if ( mod(numsim,10) ==0 || numsim == sim.MAXSIM )    
+            if ( mod(numsim,100) ==0 || numsim == sim.MAXSIM )    
                 str = ['the number of simulations :', num2str( numsim),  ...
                  ' BER:',  num2str(totbiterror/( numsim *params.totalbits)), ...
                 ' MSEE:',  num2str(SEE/numsim), ...
@@ -246,7 +250,7 @@ end
 if ( sim.noplot ~= 1 && SNRsim ~= 1 ) 
 %    plot_ber_cfo( sim, params, X_coor, BER, MSEE , edfa, laser );
    plot_ber_sb( sim, params,   X_coor , BER, Q , edfa, laser );
-%    write_outfile( dirdlm, sim, params, X_coor, BER, Q );
+   write_outfile( dirdlm, sim, params, X_coor, BER, Q );
 end
 
 %%
@@ -255,3 +259,4 @@ if ( sim.en_optisyschannel == 1 )
 end
 
 % createfigure(commonphase,H_modified,  params, frame,sim, '' )
+% disp2(logfile,datestr(now,'HH:MM /mm/dd/yy'));

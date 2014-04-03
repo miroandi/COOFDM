@@ -1,4 +1,4 @@
-function  plot_ber( sim, params, X_coor, Y1, Y2, edfa, laser,color_var, shape_var, legend1, var_str, var )
+function  plot_ber( plot_mode, sim, params, X_coor, Y1, Y2, edfa, laser,color_var, shape_var, legend1, var_str, var )
   
 
     km=1000;MHz=1e6;
@@ -20,28 +20,33 @@ function  plot_ber( sim, params, X_coor, Y1, Y2, edfa, laser,color_var, shape_va
     if ( sim.mode ==  1 )     legend_str =[ legend1,', ', legend2 ]; end    
     if ( sim.mode ==  2 )     legend_str =[ legend1, ', ', legend2 ]; end    
     if ( sim.mode ==  4 )     legend_str =[ legend1, ', ', legend2 ]; end    
-    if ( sim.mode ==  6 )     legend_str =[ legend1,', '    ]; end
+    if ( sim.mode ==  6 )     legend_str =[ legend1,', ' , legend2   ]; end
     if ( sim.mode ==  5 )     color_str =couleur(sim.subband+1); end
     
     hold on;
     
     tt =1;
-    if ( sim.mode == 6 )   tt=MHz *params.SampleTime*144; end %params.repSTF*params.rep2STF; end
-    
-%     semilogy( tt* X_coor, BER2Q(Y1(1:length(X_coor))), ...   
-%         [ color_str shape_str ], ...
-%         'MarkerFaceColor', color_str, ...
-%          'Display', legend_str);
- semilogy( tt* X_coor,  (Y1(1:length(X_coor))), ...   
+    if ( sim.mode == 6 )   tt=MHz *params.SampleTime*144; end  
+    if ( plot_mode == 1 )
+        semilogy( tt* X_coor, BER2Q(Y1(1:length(X_coor))), ...   
+            [ color_str shape_str ], ...
+            'MarkerFaceColor', color_str, ...
+             'Display', legend_str);
+    end
+    if ( plot_mode == 2 )
+        semilogy( tt* X_coor,  (Y1(1:length(X_coor))), ...   
         [ color_str shape_str ], ...
         'MarkerFaceColor', color_str, ...
          'Display', legend_str);
-%      plot( tt* X_coor,( Y2(1:length(X_coor)) ), ...   
-%         [ color_str shape_str ], ...
-%         'MarkerFaceColor', color_str, ...
-%          'Display', legend_str);
-%      
-%     ylabel('Q ') ; xlabel1 =' FiberLengths ' ; 
+    end
+    if ( plot_mode == 3 )
+         plot( tt* X_coor,( Y2(1:length(X_coor)) ), ...   
+            [ color_str shape_str ], ...
+            'MarkerFaceColor', color_str, ...
+             'Display', legend_str);
+         ylabel('Q ') ; 
+    end
+%     xlabel1 =' FiberLengths ' ; 
     ylabel(' (BER) ') ; xlabel1 =' FiberLengths ' ; 
     str1='';
     if ( sim.mode ==  2 )      ylabel('Q ') ;  end
