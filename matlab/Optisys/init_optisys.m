@@ -10,6 +10,7 @@ if ( sim.en_optisyschannel == 1 )
     % This pause is necessary to allow OptiSystem to be opened before
     % call open the project
     pause(25);
+
 end
 
 if ( params.Nstream == 1)
@@ -44,7 +45,6 @@ if ( sim.precomp_en ==  1)
 else
     dir_data = [dir1, num2str( params.NFFT), '_no_precomp',str4,str2, str1];
 end
-[status, result] = system([ 'mkdir ', dir_data],'-echo');
 
 if ( params.Nstream == 1)
     dir_opti = 'D:\user\haeyoung\Project\2012\COOFDM\optisystem\Single_Pol\';        
@@ -58,6 +58,9 @@ end
 
 if ( sim.en_optisyschannel == 1 ) 
     optsys.Open([dir_opti,opti_file]);  
+    [status, result] = system([ 'mkdir ', dir_data],'-echo');
+else
+    return
 end
 
 if ( sim.en_optisyschannel == 1 ) 
