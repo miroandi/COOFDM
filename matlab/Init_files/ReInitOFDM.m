@@ -262,7 +262,7 @@ if ( sim_new.cfotype ==5 || sim_new.cfotype == 8  )
     params_new.STF(sim.tone) = 1 +1j ;
     
 end 
- if ( params_new.NOFDE == 0 || sim_new.precomp_en == 1 )
+ if ( params_new.NOFDE == 0 || sim_new.precomp_en == 1 || sim_new.FiberLength == 0  )
      sim_new.en_OFDE =0;
  end
 

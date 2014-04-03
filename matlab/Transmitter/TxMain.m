@@ -24,4 +24,5 @@ function [ ofdmout ]=  TxMain( dataf,preambleout, sim, params, txedfa, edfa, las
         ofdmout = sim.dacout * ofdmout;
         ofdmout = Change_fixed_bit_lim( ofdmout, sim.DACbit, sim.DACLim );
 
+        ofdmout =  NPreemphasis( sim.txPreemp_en, ofdmout, sim.txpreemp ) ;
 end

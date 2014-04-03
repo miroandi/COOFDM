@@ -5,7 +5,7 @@ function [sim, params, MZmod,fiber,laser, lolaser, txedfa, edfa, rxedfa, PD]=  I
 Nbpsc =4;
 % NFFT =128;
 noedfanoise = 0 ;
-NUM =  256*128/NFFT -2 ;
+NUM =  300;%320*128/NFFT -2 ;
 % NUM =   320*128/NFFT -2 ;
 phi =  0*54 * 64/(64^2) ;
 CD  = 17;
@@ -34,7 +34,7 @@ j=sqrt(-1);
 %% Simulation
 sim.MAXSIM = 1 ; % Number of simulation 
 sim.backtoback = 0; % Direct connection between transmitter and receiver
-sim.oversample =4; 
+sim.oversample =1; 
 sim.nonoise = 0 ; % Remove additive gaussion noise  
 sim.useolddata = 0;
 sim.usefilter = 0;
@@ -56,9 +56,9 @@ sim.nlcompen  = 1 ;
 % SNR = sim.SNR ; 
 sim.subband=0;
 sim.exp_cfo =0 ;
-sim.en_ISFA =1;
+sim.en_ISFA =0;
 sim.ISFASize=5;
-sim.ISFASize1=2;
+sim.ISFASize1=1;
 
 %% OFDM parameter setting 
 params.Nbpsc =Nbpsc;
@@ -79,8 +79,8 @@ params.SampleperSymbol =  params.OVERSAMPLE * params.NFFT * ( 1 +params.CPratio)
 params.RxSampleperSymbol =  params.RxOVERSAMPLE * params.NFFT * ( 1 +params.CPratio);
 
 params.preamblefactor = 1;                      % Preamble amplitude factor 
-params.Nstream = 1 ;
-params.RXstream = 1;
+params.Nstream = 2 ;
+params.RXstream = 2;
 params.LTF = zeros(1, params.NFFT);
 
 
@@ -394,15 +394,18 @@ if (params.NFFT == 256 )
 end
 
 if ( params.NFFT == 128 )
-    MaxIdx =  55;% 42;
+    MaxIdx =  44;
     if ( MaxIdx > 40 )        
-        SubcarrierIndex1 = [3:7 9:23 25:39  41:MaxIdx] ;
+        SubcarrierIndex1 = [5:7 9:23 25:39  41:MaxIdx] ;
     else
-        SubcarrierIndex1 = [3:7 9:23 25:MaxIdx] ;
-    end    
-    PilotIndex1 = [ 8 24 40  ];%48 ];   
+        SubcarrierIndex1 = [5:7 9:23 25:MaxIdx] ;
+    end 
+    PilotIndex1 = [ 8 24 40 ];     
 %     params.Pilot = [ 1 -1 -1 1 -1 1 1 -1 ];
     params.Pilot = [ -1 -1 1 1 1 -1 ];
+%     params.Pilot = [ -1 1 ];
+%     SubcarrierIndex1 = [5:10 12:23 25:30 32:MaxIdx] ;
+%     PilotIndex1 = [ 24 ];%48 ];   
     params.AddEdgeSc =[MaxIdx+ 1    MaxIdx+ 2, MaxIdx+ 3 ] ;
 % 
 %     SubcarrierIndex1 = [5:5 7:11 13:17 19:23 25:29 31:35 37:MaxIdx] ;
@@ -544,10 +547,11 @@ MZmod.Vbias2 = -2 ;
 lambda0 = 1550*nm; %m
 AlphadB = 1*0.2 /km;        
 GDD= CD   ;                                        % ps/nm/km
+% fiber.DeltaT = params.SampleTime / sim.oversample ;  %
 fiber.DeltaH = 2*km  ;                              % m 
 fiber.DeltaH = 5*km ;
 fiber.FiberLength = 75  *km ;                      % Fiber length 
-% fiber.FFTSize = params.SampleperSymbol * sim.oversample *2 ;
+fiber.FFTSize = params.SampleperSymbol * sim.oversample *2 ;
 fiber.Overlap =2 ;
 fiber.FFTSize=0;
 fiber.Beta2 = (1)*lambda0^2/(2*pi*c)*GDD*1e-6 ;  % 2nd order dispersion
@@ -576,8 +580,8 @@ laser.launch_power = launch_power/4;%/params.Nstream ;  % Pol splitter
 
 lolaser.launch_power = RXLP/4;%/params.RXstream; % Pol splitter 
 
-laser.linewidth = 0.5* 100 *kHz; 
-lolaser.linewidth = 0.5* 100 *kHz; 
+laser.linewidth = 2* 100 *kHz; 
+lolaser.linewidth = 2* 100 *kHz; 
 sim.nolinewidth=0;
 laser.freqoff =0;
 lolaser.freqoff =0;
@@ -589,10 +593,10 @@ lolaser.freqoff =0;
 txedfa.length = 80*km; %400* km
 txedfa.hv = h*c/lambda0;
 if ( params.Nstream == 1)    
-    txedfa.gain_dB = 18.5;
+    txedfa.gain_dB = 10;
 else    
     txedfa.gain_dB =  18.40 -0.009-0.861-0.5-1.3;%6; % For single polar 10;
-    txedfa.gain_dB = 18.5;
+    txedfa.gain_dB = 18;
 end
 txedfa.NF_dB = 4; 
 txedfa.nonoise =noedfanoise;
@@ -600,7 +604,7 @@ txedfa.nonoise =noedfanoise;
 edfa.length = 75*km; %400* km
 edfa.hv = h*c/lambda0;
 edfa.gain_dB =AlphadB * edfa.length ;
-edfa.NF_dB = 5.5 ;   
+edfa.NF_dB = 5  ;   
 edfa.nonoise =noedfanoise;
 
 rxedfa.length = 80*km; %400* km
@@ -609,7 +613,7 @@ rxedfa.gain_dB =4;%26.1-1.2;%26;
 rxedfa.NF_dB =4;   
 rxedfa.nonoise =noedfanoise;
 
-params.ignore_edge_sb = 0;
+params.ignore_edge_sb = 1;
 %% Optical to electrical
 PD.responsivity = 1;                              % A/W, No modelling for PD
 PD.noise_power_dBm = -80;                         % Opt 2 electric part noise including electri amplifier
@@ -668,8 +672,14 @@ sim.FiberLength = 600   *km ;
 %% Low pass filter 
 
 % [b,a] = cheby2(31,30,0.5,'low');
-% [b,a] = cheby2(30,100,0.55,'low');
-[b,a]= butter(3,0.3 ,'low');
+[b,a] = cheby2(30,100,0.55,'low');
+
+% n = 6; 
+% r = 80; 
+% Wn = [0.07 0.4];
+% ftype = 'bandpass';
+% Transfer Function design
+% [b,a] = cheby2(n,r,Wn,ftype);
 h1=dfilt.df2(b,a);
 % fvtool(h1)
 sim.txfiltera = a;
@@ -680,7 +690,7 @@ sim.rxLPF_en =0 ;
 %% Simulation setting 
 sim.en_H_plot = 0;
 sim.showinteger =0;
-sim.noplot = 1;
+sim.noplot = 0;
 sim.en_H_plot = 0;
 sim.en_fsync_plot =0;
 sim.en_constellation_plot = 0;
@@ -701,9 +711,9 @@ sim.en_find_sync = 0;
 sim.en_find_cs = 0;
 sim.filname='simulation';
 sim.nlcompen =0; % Nonlinear compensation 
-sim.nlpostcompen = 1;
-sim.nlc_coef = 1  ;%/max(1,sim.nlcompen+sim.nlpostcompen) ;
-sim.multi_level =1;
+sim.nlpostcompen = 0;
+sim.nlc_coef = 0.5  ;%/max(1,sim.nlcompen+sim.nlpostcompen) ;
+sim.multi_level =0;
 sim.ofde = 1;
 sim.en_OFDE=1;
 sim.nlcoef_cross =1;
@@ -712,7 +722,7 @@ sim.nlcoef_cross =1;
  
 
 sim.enCPEcomp =1;
-sim.CFOcomp_en =0;
+sim.CFOcomp_en =1;
 sim.en_fsync_plot =0;
 
 params.Nstream =2;
@@ -732,10 +742,18 @@ sim.Gain = 1+1j;%1+0.987j;
 % sim.cetyppe=1;
 %% Low pass filter -analog
 
+% [b,a] = cheby2(31,30,0.5,'low');
 [b,a] = cheby2(30,100,0.55,'low');
+
+% n = 6; 
+% r = 80; 
+% Wn = [0.07 0.4];
+% ftype = 'bandpass';
+% Transfer Function design
+% [b,a] = cheby2(n,r,Wn,ftype);
 h1=dfilt.df2(b,a);
 % fvtool(h1)
-[b,a]= butter(3,0.9/sim.oversample ,'low');
+[b,a]= butter(3,0.5 ,'low');
 
 sim.txfilter.a = a;
 sim.txfilter.b = b;
@@ -743,6 +761,8 @@ sim.txfilter.b = b;
 sim.rxfilter.a = a;
 sim.rxfilter.b = b;
 
+sim.txfiltera = a;
+sim.txfilterb = b;
 sim.tone = 17;%2;
 sim.txLPF_en = 0  ;
 sim.txLPF_en1= 0;
@@ -750,8 +770,8 @@ sim.rxLPF_en = 0 ;
 sim.enIQbal =0 ;
 sim.decision_feedback_cpe  =1;
 sim.PMDtype = 0;
-fiber.PMD = 0 * 50*ps;
-sim.cetype=1;
+fiber.PMD = 1 * 50*ps;
+ sim.cetype=1;
 %% BIT ALLOC 1
 % 
 % params.Nbpsc_sc([1,  100]) = 2;
@@ -768,28 +788,7 @@ sim.cetype=1;
 % params.Nbpsc_sc([1, 50:51, 100]) = 2;
 
 %% Simulation only
-% sim.oversample =4;
 sim.txLPF_en = 0  ;
-sim.txLPF_en1=0;
-sim.rxLPF_en =1 ;
-sim.CFOcomp_en =0; 
-sim.nlcompen =0; % Nonlinear compensation 
-sim.nlpostcompen = 0;
-sim.nlc_coef = 0.5  ;%/max(1,sim.nlcompen+sim.nlpostcompen) ;
-sim.multi_level =0;
-sim.ofde = 1;
-sim.en_OFDE=1;
-txedfa.gain_dB = 18.45;
-txedfa.gain_dB  = txedfa.gain_dB  + 4;
-sim.subband1=2;
-sim.en_find_sync = 0;
-sim.en_find_cs = 0;
-fiber.Gamma=0;
-sim.en_ISFA =0;
-sim.txLPF_en1 =1 ;
-sim.nlpostcompen =0;
-sim.nophase =0 ;
-sim.zeropad=1024;
-sim.en_disp_env=1;
+sim.en_ISFA=0;
 end
 % 10*log10((76+6)/256 )-25

@@ -5,7 +5,7 @@ function [sim, params, MZmod,fiber,laser, lolaser, txedfa, edfa, rxedfa, PD]=  I
 Nbpsc =4;
 % NFFT =128;
 noedfanoise = 0 ;
-NUM =  256*128/NFFT -2 ;
+NUM =  256*128/NFFT -2 -5;
 % NUM =   320*128/NFFT -2 ;
 phi =  0*54 * 64/(64^2) ;
 CD  = 17;
@@ -34,7 +34,7 @@ j=sqrt(-1);
 %% Simulation
 sim.MAXSIM = 1 ; % Number of simulation 
 sim.backtoback = 0; % Direct connection between transmitter and receiver
-sim.oversample =4; 
+sim.oversample =2; 
 sim.nonoise = 0 ; % Remove additive gaussion noise  
 sim.useolddata = 0;
 sim.usefilter = 0;
@@ -512,6 +512,32 @@ if ( params.NFFT == 64 )
     LTF =  LTF_64 ;
     params.NSTF = 4;
 end 
+
+
+if ( params.NFFT == 32 )
+    MaxIdx =14;
+    if ( MaxIdx > 16 ) 
+        SubcarrierIndex1 = [2:7 9:15  17:MaxIdx] ;   
+        PilotIndex1 = [ 8 16 ]; 
+        params.Pilot = [ -1   1 1   -1 ];
+    else
+        SubcarrierIndex1 = [2:7 9:MaxIdx] ;   
+        PilotIndex1 = [ 8 ]; 
+        params.Pilot = [ -1   1];
+    end
+    
+    
+    LTF_32 = [	0, -1, -1, 1, 1,-1, 1,1,-1,-1, 1, 1,-1, 1,-1,1, ...	 
+                1,-1,-1, 1,-1, 1,-1,1, 1, 1, 1,-1,-1,-1,-1,0 ];
+
+    % 16 repetition
+    STF_32 = [ 0, 0, 0, 0, 0, 0, 0, 0, 1+j, 0, 0, 0, 0, 0, 0, 0, ...
+                -1-j, 0, 0, 0,	0, 0, 0, 0, 1+j, 0, 0, 0, 0, 0, 0, 0, ...   
+                ];
+
+    params.STF = STF_32;
+    LTF =  LTF_32 ;
+end 
 params.LTF = LTF;
 params.SubcarrierIndex1 = SubcarrierIndex1;
 params.PilotIndex1 =PilotIndex1;
@@ -735,23 +761,27 @@ sim.Gain = 1+1j;%1+0.987j;
 [b,a] = cheby2(30,100,0.55,'low');
 h1=dfilt.df2(b,a);
 % fvtool(h1)
-[b,a]= butter(3,0.9/sim.oversample ,'low');
+[b,a]= butter(5,0.95/sim.oversample ,'low');
 
 sim.txfilter.a = a;
 sim.txfilter.b = b;
-[b,a]= butter(31,0.5 ,'low');
+[b,a]= butter(31,0.6 ,'low');
 sim.rxfilter.a = a;
 sim.rxfilter.b = b;
+sim.txpreemp.a = 1;  
+sim.txpreemp.b =  [1 -0.1];
 
-sim.tone = 17;%2;
 sim.txLPF_en = 0  ;
 sim.txLPF_en1= 0;
 sim.rxLPF_en = 0 ;
+sim.txPreemp_en = 0 ;
+%%
+sim.tone = 10;%2;
 sim.enIQbal =0 ;
 sim.decision_feedback_cpe  =1;
-sim.PMDtype = 0;
+sim.PMDtype = 1;
 fiber.PMD = 0 * 50*ps;
-sim.cetype=7;
+sim.cetype=1;
 %% BIT ALLOC 1
 % 
 % params.Nbpsc_sc([1,  100]) = 2;
@@ -774,22 +804,25 @@ sim.txLPF_en1=0;
 sim.rxLPF_en =1 ;
 sim.CFOcomp_en =0; 
 sim.nlcompen =0; % Nonlinear compensation 
-sim.nlpostcompen = 0;
-sim.nlc_coef = 0.5  ;%/max(1,sim.nlcompen+sim.nlpostcompen) ;
-sim.multi_level =0;
+sim.nlpostcompen = 1;
+sim.nlc_coef = 1  ;%/max(1,sim.nlcompen+sim.nlpostcompen) ;
+sim.multi_level =1;
 sim.ofde = 1;
 sim.en_OFDE=1;
 txedfa.gain_dB = 18.45;
-txedfa.gain_dB  = txedfa.gain_dB  + 4;
+txedfa.gain_dB  = txedfa.gain_dB  + 2;
 sim.subband1=2;
 sim.en_find_sync = 0;
 sim.en_find_cs = 0;
-fiber.Gamma=0;
-sim.en_ISFA =0;
+sim.en_ISFA =1;
 sim.txLPF_en1 =1 ;
-sim.nlpostcompen =0;
+sim.rxLPF_en = 0;
 sim.nophase =0 ;
 sim.zeropad=1024;
-sim.en_disp_env=1;
+sim.en_disp_env=0;
+sim.ISFASize= 4 * params.NFFT/128;
+sim.ISFASize1= round(2* params.NFFT/128);
+sim.txPreemp_en =1;
+sim.nlcoef_cross =2/3;
 end
 % 10*log10((76+6)/256 )-25
