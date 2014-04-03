@@ -111,15 +111,18 @@ function [LTFo,LTF_seq]= GenLTF( params, sim )
             LTF= [ E O ];
             tmp = ifft([ LTFe.* exp(1j* phasor), osdata]);
             
-
+            if ( params.Nstream == 2 ) 
+                LTF =[ E O; ...
+                       O E ];       
+            end
            %%
            % [ E O E; E E O];
             if ( params.MIMO_emul == 1 ) 
                 LTF =[ O E O; E E O];
             else
                 if ( params.Nstream == 2 ) 
-                LTF =[ E O; ...
-                       O E ];       
+                LTF =[ O E; ...
+                       E O ];       
                 end
             end
             tmp = ifft([ LTFe  ]);
