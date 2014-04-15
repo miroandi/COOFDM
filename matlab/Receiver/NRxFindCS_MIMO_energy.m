@@ -78,7 +78,7 @@ for istream=1:size(in1,1)
                 cs=cs2;
             else
                 val1 = 98; signal_val1  = 100;
-                val0 = 3; signal_val0 = 16;
+                val0 = 6; signal_val0 = 16;
             end
             val_off= + len/2 ;
         end   

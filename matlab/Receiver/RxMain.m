@@ -4,7 +4,7 @@ function [demapperout, fftout, H_modified, cfo_phase, commonphase, snr, fsync_po
     adcout = Change_fixed_bit_lim(agcout, sim.ADCbit, 2^(sim.ADCbit-1)-1);
     
     %% CFO 
-   [ adcout,cfo_phase,cfo_phase_8,cfo_phase_17,iqamp ] = NRxSFCO( adcout, params, sim) ;
+%    [ adcout,cfo_phase,cfo_phase_8,cfo_phase_17,iqamp ] = NRxSFCO( adcout, params, sim) ;
    
    %% OFDE, SPM
     prev_in =[adcout(:, (size(adcout,2)-(params.NOFDE)+1):size(adcout,2)), adcout];
@@ -31,7 +31,7 @@ function [demapperout, fftout, H_modified, cfo_phase, commonphase, snr, fsync_po
      %% CFO 
      scfo_comp = adcout; iqamp=0; 
 %     
-%     [ scfo_comp,cfo_phase,cfo_phase_8,cfo_phase_17,iqamp ] = NRxSFCO( adcout, params, sim) ;
+    [ scfo_comp,cfo_phase,cfo_phase_8,cfo_phase_17,iqamp ] = NRxSFCO( adcout, params, sim) ;
     %% Symbol synchronization
     [ sync_out,fsync_point ]                         = NRxSync( scfo_comp, params, sim)   ;
     %% Frequency domain

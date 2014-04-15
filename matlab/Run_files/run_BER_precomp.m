@@ -3,16 +3,15 @@ MHz = 1e6;
 mW =1e-3;
 if ( sim_mode ~= 0 )
     
-     [sim, params, MZmod,fiber,laser, iolaser, txedfa, edfa, rxedfa, PD]= InitOFDM_FFTSize(NFFT, 1,SampleTime );
+    [sim, params, MZmod,fiber,laser, iolaser, txedfa, edfa, rxedfa, PD]= InitOFDM_11Sept(NFFT, 1,SampleTime );
 
-%    sim.tone = tone * params.NFFT/128;
+    sim.tone = tone * params.NFFT/128;
     sim.MAXSIM= maxsim;
     % 1: Current design, 2: Ref[2] ,3:Idea 2 ,4:Idea 2 -1, 5:Idea 1 6: Ref[8] 
     sim.cfotype =cfotype; 
     sim.precomp_en = precomp_en;
     %% Simulation enviroment 
     sim.nonoise = nonoise;
-    sim.nophase=1;
     sim.nolinewidth=nolinewidth;
     sim.en_AWGN = en_AWGN ;
     snrin = osnr2snr(sim.osnrin, sim.oversample/params.SampleTime);
@@ -22,7 +21,8 @@ if ( sim_mode ~= 0 )
     sim.mode = sim_mode; % 0: single simulation 1 : length, 2: SNR  4: bit (fixed sim) 
     sim.subband=subband;
     sim.extcon = extcon;
-    laser.freqoff   =0*100 *MHz;% 1/params.NFFT  * 0.66   ; % 1* 265 *MHz;%87*MHz; %96
+    laser.freqoff   = 1*23.9 *MHz;% 1/params.NFFT  * 0.66   ; % 1* 265 *MHz;%87*MHz; %96
+    
     
     dir_data='.';    
     params.Nbpsc = Nbpsc;    
@@ -35,9 +35,9 @@ if ( sim_mode ~= 0 )
     txedfa.nonoise =noedfanoise;
     edfa.nonoise =noedfanoise;
     params.CPratio =CPratio;
-   params.MIMO_emul = 0;
-   sim.en_find_cs=0;
-   txedfa.gain_dB =  gain_dB; 
+    params.MIMO_emul = 0;
+%     sim.en_find_cs=1;
+%    txedfa.gain_dB =  gain_dB; 
 %    params.NSymbol = 50;
 % fiber.Npol =params.RXstream ;   
     run('../Optisys/init_optisys.m');
@@ -54,7 +54,7 @@ params.NOFDE = NOFDE;
  else
      sim.en_OFDE = 0;
  end
- sim.en_OFDE = en_OFDE;
+ 
 %% Simulation test set 
 % 1 : Fiber length  
 % 2 : OSNR  
@@ -99,7 +99,7 @@ for SNRsim=1:length(X_coor)
         sim.SNR =[X_coor(SNRsim);X_coor(SNRsim);];
     end
     if ( sim.mode == 1 || sim.mode == 5  ) 
-        sim.FiberLength  = (X_coor(SNRsim))*km;
+        sim.FiberLength  = (X_coor(SNRsim))*km;  
         sim.span = sim.FiberLength/ edfa.length;
     end 
     if ( sim.mode == 3 ) 
@@ -196,7 +196,7 @@ for SNRsim=1:length(X_coor)
                 diff_rtx =[ diff_rtx ;  frame.diff_rtx ];
             end
             
-            if ( mod(numsim,100) ==0 || numsim == sim.MAXSIM )    
+            if ( mod(numsim,20) ==0 || numsim == sim.MAXSIM )    
                 str = ['the number of simulations :', num2str( numsim),  ...
                  ' BER:',  num2str(totbiterror/( numsim *params.totalbits)), ...
                 ' MSEE:',  num2str(SEE/numsim), ...
@@ -221,7 +221,7 @@ for SNRsim=1:length(X_coor)
     BER(SNRsim) = max(1e-9, sum(totbiterror)/( numsim * params.totalbits));
     Q(SNRsim) = 10*log10(2* totESNR / numsim );
     MSEE(SNRsim) =  SEE / numsim ;
-    str = ['FiberLength :', num2str( sim.FiberLength/km ), 'km, sim.precom_CD  ', ...
+    str = ['FiberLength :', num2str( sim.FiberLength/km ), ' km, sim.precom_CD  ', ...
     num2str( sim.precom_CD ), ...
         ' BER:',  num2str(BER(SNRsim)), ...
         ' MSEE:',  num2str(MSEE(SNRsim)), ...

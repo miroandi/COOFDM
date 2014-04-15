@@ -20,9 +20,19 @@ function out   = ifft_band_Precomp( in_flat , params, sim )
 
             fftsize = params.NFFT * params.OVERSAMPLE;  
             out1 = zeros( fftsize, fftsize);
+            in_tmp = zeros(fftsize);
             for isize=1:fftsize
-                out1( :, isize ) =  in .*   exp(  1i*2*pi/fftsize * (isize-1) *(0:fftsize-1))/fftsize ;
+                in_tmp = zeros(1,fftsize);
+                in_tmp(isize)= in(isize);
+                out1( isize, :) = ifft(in_tmp);
             end
+            
+%             for isize=1:fftsize
+% %                 in_tmp = zeros(1,fftsize);
+% %                 in_tmp(isize)= in(isize);
+% %                 out1(:,isize) = ifft(in_tmp);
+%                 out1( :, isize ) =  in .*   exp(  1i*2*pi/fftsize * (isize-1) *(0:fftsize-1))/fftsize ;
+%             end
 
             lut_out = Change_fixed_bit_lim( out1, sim.lut_bit , sim.lut_max  );
             out =  Change_fixed_bit_lim( (lut_out) , sim.fftout , sim.fft_max  );

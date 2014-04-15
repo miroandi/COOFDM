@@ -105,6 +105,7 @@ if ( sim_new.precomp_en == 2 || sim_new.precomp_en == 3)
     
     params_new.CPIndex = [1+(params_new.NFFT*params_new.OVERSAMPLE-NumCP)/sim.subband1:params_new.NFFT*params_new.OVERSAMPLE/sim.subband1]; 
     params_new.TXLTFCPIndex = [1+(NFFTSample-NFFTSample*params_new.CPratio)/sim.subband1:NFFTSample/sim.subband1];
+    params_new.CPshift = 1 * -params_new.OVERSAMPLE * params_new.NFFT * (  params_new.CPratio)/2/sim.subband1;
 else
     params_new.CPIndex = [params_new.NFFT*params_new.OVERSAMPLE-NumCP+1:params_new.NFFT*params_new.OVERSAMPLE]; 
     params_new.TXLTFCPIndex = [(NFFTSample-NFFTSample*params_new.CPratio+1) :NFFTSample ];
@@ -112,6 +113,7 @@ else
     params_new.TXLTFCPIndex = [(NFFTSample-NFFTSample*params_new.CPratio/2+1) : NFFTSample  (NFFTSample-NFFTSample*params_new.CPratio/2+1) : NFFTSample ];
     end
      params_new.CPIndex =  params_new.TXLTFCPIndex;
+     params_new.CPshift = 1 * -params_new.OVERSAMPLE * params_new.NFFT * (  params_new.CPratio)/2;
 end 
 params_new.TXSTFIndex = [];%
 for nstf=1:params_new.NSTF*params_new.NFFT/16 
@@ -300,9 +302,13 @@ if ( sim.en_disp_env )
     disp2( logfile,['Sampling frequency ', num2str(1/params_new.SampleTime /GHz),' GHz']); 
     % disp2( logfile,['TX Laser power ', num2str(10*log10( launch_power/mW)   ),' dBm']);     
     % disp2( logfile,['TX Gain ', num2str(10*log10(laser.launch_power/mW)   ),' dBm']);       
-    disp2( logfile,['Modulation ', num2str( 2^params_new.Nbpsc ), 'QAM ']);
-    disp2( logfile,['Datarate ', num2str( datarate / 10^9  ), ' Gbps ']);              
-    disp2( logfile,['Datarate ', num2str( normdatarate / 10^9  ), ' Gbps ']);
+    disp2( logfile,['Modulation ', num2str( 2^params_new.Nbpsc ), 'QAM ']);    
+    %The definitiona of raw data rate and norminal data rate are in 
+    % S. L. Jansen, I. Morita, T. C. Schenk, N. Takeda, and H. Tanaka, 
+    % "Coherent optical 25.8-Gb/s OFDM transmission over 4160-km SSMF," 
+    % Journal of Lightwave Technology, vol. 26, pp. 6-15, 2008
+    disp2( logfile,['Raw Datarate ', num2str( datarate / 10^9  ), ' Gbps ']);    
+    disp2( logfile,['Norminal Datarate ', num2str( normdatarate / 10^9  ), ' Gbps ']);
     disp2( logfile,['FFT size ', num2str( params_new.NFFT ), ' ', ' CP cnt', num2str(params_new.NFFT * params_new.CPratio)]);
     disp2( logfile,['syncpoint ', num2str(sim_new.syncpoint ), ' ']);
     disp2( logfile,['Precomp enable ', num2str(  sim_new.precomp_en ), '. subband ', num2str(sim_new.subband)]);

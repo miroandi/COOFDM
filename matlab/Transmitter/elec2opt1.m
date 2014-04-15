@@ -9,7 +9,7 @@ function [ovosignal, phase_noise] =  elec2opt1( esignal, laser, MZmod, txedfa, s
 
     osignal  = MZM( real(esignal), MZmod, laser  );
     osignal  = osignal + 1j*MZM( imag(esignal), MZmod, laser  );
-    osignal =osignal/sqrt(2);
+    osignal = osignal/sqrt(2);
     osignal  = EDFA( osignal, txedfa, params) ;
 
     optoofdmout_pz = osignal;

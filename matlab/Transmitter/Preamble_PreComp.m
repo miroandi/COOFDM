@@ -107,7 +107,8 @@ function [LTFo,LTF_seq]= GenLTF( params, sim )
 
             E = [LTFet(:,params.TXLTFCPIndex) LTFet ];
             O = [LTFot(:,params.TXLTFCPIndex) LTFot ];
-
+            E=  circshift(  E, [0, params.CPshift]) ;
+            O=  circshift(  O, [0, params.CPshift]) ;
             LTF= [ E O ];
             tmp = ifft([ LTFe.* exp(1j* phasor), osdata]);
             
@@ -131,7 +132,7 @@ function [LTFo,LTF_seq]= GenLTF( params, sim )
         LTFt  = ifft_band([(params.LTF).* exp(j* phasor), osdata], params, sim );  
         LTFt  = sqrt(1/(sum( abs(params.LTF) .* abs(params.LTF) )))*LTFt;
         LTF0= [LTFt(:,params.TXLTFCPIndex) LTFt  ];
- 
+        LTF0=  circshift(  LTF0, [0, params.CPshift]) ;
 
         LTF = [ ];
         for nstf=1:params.NLTF       

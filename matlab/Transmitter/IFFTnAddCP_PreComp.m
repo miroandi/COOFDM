@@ -43,20 +43,19 @@ function transmitout   = IFFTnAddCP_PreComp( transmitin, params, sim );
     NAddedSamples= nFFTSize *(oversample-1) ;
     for k=1:NumSymbol     
         OneSymbol = (transmitin(:, ((k-1)*nFFTSize +1:k*nFFTSize) ));
-%         OneSymbol = (transmitin(:, ( 1: nFFTSize) ));
         OverSymbol = ([ OneSymbol , zeros(d1,NAddedSamples)]);
         if (d1==1)
             ifftout = ifft_band( (OverSymbol(1,:) ), params, sim);
         else
              ifftout = [ ifft_band( (OverSymbol(1,:) ), params, sim) ; ...
                            ifft_band( (OverSymbol(2,:) ), params, sim) ; ];
-        end
-        if ( sim.precomp_en == 2 || sim.precomp_en == 3 )
-            guardout = [ifftout(:,params.CPIndex), ifftout] ;
+        end        
+        ifftout = circshift( ifftout, [0, params.CPshift]) ;
+        if ( sim.precomp_en == 2 || sim.precomp_en == 3 )            
+            guardout =   [ifftout(:,params.CPIndex), ifftout]  ;
             transmitout(:, ((k-1)*nFFTSize/sim.subband1*oversample*(1+CPratio) +1:k*nFFTSize/sim.subband1*oversample*(1+CPratio))) = guardout;              
          else                         
-            guardout = [ifftout(:,params.CPIndex), ifftout] ;
-%             guardout=ifftout;
+            guardout =  [ifftout(:,params.CPIndex), ifftout]; 
             transmitout(:, ((k-1)*nFFTSize*oversample*(1+CPratio) +1:k*nFFTSize*oversample*(1+CPratio))) = guardout;       
            end
     end
