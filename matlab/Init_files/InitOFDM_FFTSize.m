@@ -706,7 +706,7 @@ sim.rxLPF_en =0 ;
 %% Simulation setting 
 sim.en_H_plot = 0;
 sim.showinteger =0;
-sim.noplot = 0;
+sim.noplot = 1;
 sim.en_H_plot = 0;
 sim.en_fsync_plot =0;
 sim.en_constellation_plot = 0;
@@ -810,7 +810,7 @@ sim.multi_level =0;
 sim.ofde = 1;
 sim.en_OFDE=0;
 txedfa.gain_dB = 18.45;
-% txedfa.gain_dB  = txedfa.gain_dB  + 2;
+txedfa.gain_dB  = txedfa.gain_dB  + 2;
 sim.subband1=2;
 sim.en_find_sync = 0;
 sim.en_find_cs = 0;

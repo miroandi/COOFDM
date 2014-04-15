@@ -34,7 +34,7 @@ j=sqrt(-1);
 %% Simulation
 sim.MAXSIM = 1 ; % Number of simulation 
 sim.backtoback = 0; % Direct connection between transmitter and receiver
-sim.oversample =4; 
+sim.oversample =1; 
 sim.nonoise = 0 ; % Remove additive gaussion noise  
 sim.useolddata = 0;
 sim.usefilter = 0;
@@ -404,7 +404,7 @@ if ( params.NFFT == 128 )
         PilotIndex1 = [ 8 24   ];  
         params.Pilot = [ -1 1 1 -1  ];
     end 
-       
+
 %     SubcarrierIndex1 = [5:10 12:23 25:30 32:MaxIdx] ;
 %     PilotIndex1 = [ 24 ];%48 ];   
     params.AddEdgeSc =[MaxIdx+ 1    MaxIdx+ 2, MaxIdx+ 3 ] ;
@@ -581,8 +581,8 @@ laser.launch_power = launch_power/4;%/params.Nstream ;  % Pol splitter
 
 lolaser.launch_power = RXLP/4;%/params.RXstream; % Pol splitter 
 
-laser.linewidth = 0.5* 100 *kHz; 
-lolaser.linewidth = 0.5* 100 *kHz; 
+laser.linewidth = 2* 100 *kHz; 
+lolaser.linewidth = 2* 100 *kHz; 
 sim.nolinewidth=0;
 laser.freqoff =0;
 lolaser.freqoff =0;
@@ -740,12 +740,34 @@ params.en_DFT_S = 0;
 %%
 sim.DCoffst =   -(-7.1443e-004 -0.0010j );
 sim.Gain = 1+1j;%1+0.987j;
+
+ 
+% sim.cetyppe=1;
+%% Low pass filter -analog
+
+% [b,a] = cheby2(31,30,0.5,'low');
+[b,a] = cheby2(30,100,0.55,'low');
+h1=dfilt.df2(b,a);
+% fvtool(h1)
+[b,a]= butter(3,0.5 ,'low');
+
+sim.txfilter.a = a;
+sim.txfilter.b = b;
+[b,a]= butter(31,0.5 ,'low');
+sim.rxfilter.a = a;
+sim.rxfilter.b = b;
+
+sim.txfiltera = a;
+sim.txfilterb = b;
+%%
 sim.tone = 17;%2;
 sim.enIQbal =0 ;
 sim.decision_feedback_cpe  =1;
+ 
 sim.PMDtype = 1; % 0 : Use fiber.Dp, 1: fiber.PMD 
 fiber.PMD = 1 * 50*ps;
 sim.cetype=1;
+
 
 %% BIT ALLOC 1
 % 

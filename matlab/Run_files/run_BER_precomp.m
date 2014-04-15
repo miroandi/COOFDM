@@ -5,6 +5,7 @@ if ( sim_mode ~= 0 )
     
     [sim, params, MZmod,fiber,laser, iolaser, txedfa, edfa, rxedfa, PD]= InitOFDM_11Sept(NFFT, 1,SampleTime );
 
+
     sim.tone = tone * params.NFFT/128;
     sim.MAXSIM= maxsim;
     % 1: Current design, 2: Ref[2] ,3:Idea 2 ,4:Idea 2 -1, 5:Idea 1 6: Ref[8] 
@@ -54,7 +55,7 @@ params.NOFDE = NOFDE;
  else
      sim.en_OFDE = 0;
  end
- 
+ sim.en_OFDE = en_OFDE;
 %% Simulation test set 
 % 1 : Fiber length  
 % 2 : OSNR  
@@ -260,3 +261,4 @@ end
 
 % createfigure(commonphase,H_modified,  params, frame,sim, '' )
 % disp2(logfile,datestr(now,'HH:MM /mm/dd/yy'));
+
