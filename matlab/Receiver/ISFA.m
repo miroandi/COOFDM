@@ -73,9 +73,11 @@ function H_modified = ISFA1_abs( H, sim, params, min_sc, max_sc)
 end
 
 
-function H_modified = ISFA1_phase( H, H_in, sim, params, min_sc, max_sc) % H_in: Original H, H : abs modified input 
+function H_modified = ISFA1_phase( H, H_in1, sim, params, min_sc, max_sc) % H_in: Original H, H : abs modified input 
 
         H_modified = H; 
+        H = H .* exp( -1j*[0:(params.NFFT-1)]*2*pi/params.NFFT*(sim.syncpoint));
+        H_in = H_in1 .* exp( -1j*[0:(params.NFFT-1)]*2*pi/params.NFFT*(sim.syncpoint));
         for sc=params.LTFindex           
 
             tmp =sum(abs(params.LTF( max(min_sc, sc-sim.ISFASize1):min(max_sc, sc+sim.ISFASize1))));
@@ -97,4 +99,5 @@ function H_modified = ISFA1_phase( H, H_in, sim, params, min_sc, max_sc) % H_in:
                 H_modified(sc) =  real_H  + 1j* imag_H ;
             end
         end 
+       H_modified = H_modified .* exp(  1j*[0: (params.NFFT-1)]*2*pi/params.NFFT*(sim.syncpoint));
 end
