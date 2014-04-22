@@ -24,9 +24,11 @@ Nbpsc=4;
 SampleTime =1/26/GHz *(Nbpsc/4 );
 NOFDE =1024;
 NFFT=128; precomp_en =0;  CPratio =1/8;
+jitter =0;
+en_OFDE=0;
 %%
-
-defaultStream = RandStream.getGlobalStream;
+defaultStream = RandStream.getDefaultStream;
+% defaultStream = RandStream.getGlobalStream;
 savedState = defaultStream.State;
 sim_mode =4;
 sim_mode1 = 0 ;
