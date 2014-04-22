@@ -51,11 +51,11 @@ sim.stopcnt = sim.MAXSIM * params.totalbits *0.005;
  
 params.NOFDE = NOFDE;
  if ( params.NOFDE ~= 0 && sim.precomp_en < 1 )
-%      sim.en_OFDE =1;
+     sim.en_OFDE =en_OFDE;
  else
      sim.en_OFDE = 0;
  end
- sim.en_OFDE = en_OFDE;
+ 
 %% Simulation test set 
 % 1 : Fiber length  
 % 2 : OSNR  
@@ -158,6 +158,7 @@ for SNRsim=1:length(X_coor)
 
 
                 ovoptofdmout = NLowPassFilter1( ovoptofdmout, sim.txfilter, sim.txLPF_en1 );
+
                 %============ Channel ==================================
                 noisychannelout =  ...
                     channel( ovoptofdmout , fiber, edfa, sim, params ); 
@@ -197,7 +198,7 @@ for SNRsim=1:length(X_coor)
                 diff_rtx =[ diff_rtx ;  frame.diff_rtx ];
             end
             
-            if ( mod(numsim,20) ==0 || numsim == sim.MAXSIM )    
+            if ( mod(numsim,10) ==0 || numsim == sim.MAXSIM )    
                 str = ['the number of simulations :', num2str( numsim),  ...
                  ' BER:',  num2str(totbiterror/( numsim *params.totalbits)), ...
                 ' MSEE:',  num2str(SEE/numsim), ...
