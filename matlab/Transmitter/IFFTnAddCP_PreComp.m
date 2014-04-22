@@ -50,12 +50,12 @@ function transmitout   = IFFTnAddCP_PreComp( transmitin, params, sim );
              ifftout = [ ifft_band( (OverSymbol(1,:) ), params, sim) ; ...
                            ifft_band( (OverSymbol(2,:) ), params, sim) ; ];
         end        
-        ifftout = circshift( ifftout, [0, params.CPshift]) ;
+%         ifftout = circshift( ifftout, [0, params.CPshift]) ;
         if ( sim.precomp_en == 2 || sim.precomp_en == 3 )            
-            guardout =   [ifftout(:,params.CPIndex), ifftout]  ;
+            guardout = circshift(  [ifftout(:,params.CPIndex), ifftout] , [0, params.CPshift])  ;
             transmitout(:, ((k-1)*nFFTSize/sim.subband1*oversample*(1+CPratio) +1:k*nFFTSize/sim.subband1*oversample*(1+CPratio))) = guardout;              
          else                         
-            guardout =  [ifftout(:,params.CPIndex), ifftout]; 
+            guardout = circshift(  [ifftout(:,params.CPIndex), ifftout] , [0, params.CPshift]); 
             transmitout(:, ((k-1)*nFFTSize*oversample*(1+CPratio) +1:k*nFFTSize*oversample*(1+CPratio))) = guardout;       
            end
     end
