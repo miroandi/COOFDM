@@ -105,7 +105,7 @@ if ( sim_new.precomp_en == 2 || sim_new.precomp_en == 3)
     
     params_new.CPIndex = [1+(params_new.NFFT*params_new.OVERSAMPLE-NumCP)/sim.subband1:params_new.NFFT*params_new.OVERSAMPLE/sim.subband1]; 
     params_new.TXLTFCPIndex = [1+(NFFTSample-NFFTSample*params_new.CPratio)/sim.subband1:NFFTSample/sim.subband1];
-    params_new.CPshift = 1 * -params_new.OVERSAMPLE * params_new.NFFT * (  params_new.CPratio)/2/sim.subband1;
+    params_new.CPshift = 0 * -params_new.OVERSAMPLE * params_new.NFFT * (  params_new.CPratio)/2/sim.subband1;
 else
     params_new.CPIndex = [params_new.NFFT*params_new.OVERSAMPLE-NumCP+1:params_new.NFFT*params_new.OVERSAMPLE]; 
     params_new.TXLTFCPIndex = [(NFFTSample-NFFTSample*params_new.CPratio+1) :NFFTSample ];
@@ -113,7 +113,7 @@ else
     params_new.TXLTFCPIndex = [(NFFTSample-NFFTSample*params_new.CPratio/2+1) : NFFTSample  (NFFTSample-NFFTSample*params_new.CPratio/2+1) : NFFTSample ];
     end
      params_new.CPIndex =  params_new.TXLTFCPIndex;
-     params_new.CPshift = 1 * -params_new.OVERSAMPLE * params_new.NFFT * (  params_new.CPratio)/2;
+     params_new.CPshift = 0 * -params_new.OVERSAMPLE * params_new.NFFT * (  params_new.CPratio)/2;
 end 
 params_new.TXSTFIndex = [];%
 for nstf=1:params_new.NSTF*params_new.NFFT/16 
