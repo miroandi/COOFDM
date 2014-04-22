@@ -34,7 +34,7 @@ j=sqrt(-1);
 %% Simulation
 sim.MAXSIM = 1 ; % Number of simulation 
 sim.backtoback = 0; % Direct connection between transmitter and receiver
-sim.oversample =1; 
+sim.oversample =2; 
 sim.nonoise = 0 ; % Remove additive gaussion noise  
 sim.useolddata = 0;
 sim.usefilter = 0;
@@ -58,7 +58,7 @@ sim.subband=0;
 sim.exp_cfo =0 ;
 sim.en_ISFA =0;
 sim.ISFASize=5;
-sim.ISFASize1=3;
+sim.ISFASize1=2;
 
 %% OFDM parameter setting 
 params.Nbpsc =Nbpsc;
@@ -525,17 +525,7 @@ params.LTFtype = [1 1 ; 1 -1 ;];
 %  params.NSTF = 1;
 params.cs_thres =5;
 params.PilotIndex1 =PilotIndex1 ;
-% params.NLTF =1;
-%% Filter Coefficient
-% f = [0 0.55 0.55 1]; m = [1 1 0 0];
-% b = fir2(160,f,m);
-% params.LPF =b;
-% [h, w]=freqz(b,1,128);
-% plot(f,m,w/pi, abs(h))
-[b,a] = butter(31,0.6,'low');
-%  h1=dfilt.df2(b,a);
-% fvtool(h1)
-
+ 
 
 %% MZM
 MZmod.Vpi_DC =  4 ; 
@@ -581,8 +571,8 @@ laser.launch_power = launch_power/4;%/params.Nstream ;  % Pol splitter
 
 lolaser.launch_power = RXLP/4;%/params.RXstream; % Pol splitter 
 
-laser.linewidth = 2* 100 *kHz; 
-lolaser.linewidth = 2* 100 *kHz; 
+laser.linewidth = 50 *kHz; 
+lolaser.linewidth = 50 *kHz; 
 sim.nolinewidth=0;
 laser.freqoff =0;
 lolaser.freqoff =0;
@@ -614,7 +604,7 @@ rxedfa.gain_dB =4;%26.1-1.2;%26;
 rxedfa.NF_dB =4;   
 rxedfa.nonoise =noedfanoise;
 
-params.ignore_edge_sb = 1;
+params.ignore_edge_sb = 0;
 %% Optical to electrical
 PD.responsivity = 1;                              % A/W, No modelling for PD
 PD.noise_power_dBm = -80;                         % Opt 2 electric part noise including electri amplifier
@@ -670,10 +660,10 @@ sim.en_fsync_plot =0 ;
 sim.useprbsdata =1 ;
 sim.useolddata =0 ;
 sim.FiberLength = 600   *km ;   
-%% Low pass filter -analog
-
-[b,a] = cheby2(30,100,0.55,'low');
-h1=dfilt.df2(b,a);
+%% Low pass filters -analog/digital 
+% 
+% [b,a] = cheby2(30,100,0.55,'low');
+% h1=dfilt.df2(b,a);
 % fvtool(h1)
 [b,a]= butter(5,0.9/sim.oversample ,'low');
 
@@ -682,11 +672,18 @@ sim.txfilter.b = b;
 [b,a]= butter(31,0.6 ,'low');
 sim.rxfilter.a = a;
 sim.rxfilter.b = b;
+sim.txfiltera = a;
+sim.txfilterb = b;
+
 sim.txpreemp.a = 1;  
 sim.txpreemp.b =  [1 -0.1];
-
+% impulse response of SRRC filter
+% overSampling_Factor=1, (Response time  -4~ 4 )
+% alpha /roll off factor = 0.4
+sim.srrc_coef = SRRC(8,0.04); 
 sim.txLPF_en = 0  ;
 sim.txLPF_en1= 0;
+sim.SRRC_en = 0;
 sim.rxLPF_en = 0 ;
 sim.txPreemp_en = 0 ;
 %% Simulation setting 
@@ -720,9 +717,6 @@ sim.ofde = 1;
 sim.en_OFDE=1;
 sim.nlcoef_cross =1;
 %%
-
- 
-
 sim.enCPEcomp =1;
 sim.CFOcomp_en =1;
 sim.en_fsync_plot =0;
@@ -743,24 +737,9 @@ sim.Gain = 1+1j;%1+0.987j;
 
  
 % sim.cetyppe=1;
-%% Low pass filter -analog
 
-% [b,a] = cheby2(31,30,0.5,'low');
-[b,a] = cheby2(30,100,0.55,'low');
-h1=dfilt.df2(b,a);
-% fvtool(h1)
-[b,a]= butter(3,0.5 ,'low');
-
-sim.txfilter.a = a;
-sim.txfilter.b = b;
-[b,a]= butter(31,0.5 ,'low');
-sim.rxfilter.a = a;
-sim.rxfilter.b = b;
-
-sim.txfiltera = a;
-sim.txfilterb = b;
 %%
-sim.tone = 17;%2;
+sim.tone = 10;%2;
 sim.enIQbal =0 ;
 sim.decision_feedback_cpe  =1;
  
@@ -788,6 +767,7 @@ sim.cetype=1;
 sim.txLPF_en = 0  ;
 sim.txLPF_en1=1;
 sim.rxLPF_en =1 ;
+sim.SRRC_en = 1;
 sim.CFOcomp_en =1; 
 sim.nlcompen =0; % Nonlinear compensation 
 sim.nlpostcompen = 0;
@@ -800,8 +780,8 @@ txedfa.gain_dB = 18.45;
 sim.subband1=2;
 sim.en_find_sync = 0;
 sim.en_find_cs = 0;
-sim.en_ISFA =1;
-sim.nophase =0 ;
+sim.en_ISFA =0;
+sim.nophase = 0;
 sim.zeropad=0;
 sim.en_disp_env=1;
 sim.txPreemp_en =0;
