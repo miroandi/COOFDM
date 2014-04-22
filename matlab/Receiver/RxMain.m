@@ -1,5 +1,6 @@
 function [demapperout, fftout, H_modified, cfo_phase, commonphase, snr, fsync_point] = RxMain( noisyreceivein, params, sim ,fiber )
 %===================== Receiver ===================================        
+    [noisyreceivein] = digfilt( sim.SRRC_en, noisyreceivein, sim.srrc_coef );
     agcout = NRxAGC (noisyreceivein, params, sim);
     adcout = Change_fixed_bit_lim(agcout, sim.ADCbit, 2^(sim.ADCbit-1)-1);
     
