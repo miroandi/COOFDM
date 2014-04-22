@@ -12,3 +12,4 @@ addpath( [ currentFolder 'Run_files' ] );
 addpath( [ currentFolder 'Transmitter'] );
 addpath( [ currentFolder 'Common' ] );
 addpath( [ currentFolder 'MeasurementTool' ] );
+addpath( [ currentFolder 'Filters' ] );
