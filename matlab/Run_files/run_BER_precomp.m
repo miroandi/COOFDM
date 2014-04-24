@@ -1,10 +1,10 @@
 %% Initialize 
+tic;
 MHz = 1e6;
 mW =1e-3;
 if ( sim_mode ~= 0 )
     
     [sim, params, MZmod,fiber,laser, iolaser, txedfa, edfa, rxedfa, PD]= InitOFDM_11Sept(NFFT, 1,SampleTime );
-
 
     sim.tone = tone * params.NFFT/128;
     sim.MAXSIM= maxsim;
@@ -124,100 +124,77 @@ for SNRsim=1:length(X_coor)
     [sim.precom_CD, sim.delay, sim.phase, sim.delay_diff ] = NCalDelay_ver2(fiber, params, sim) ;   
     [packetlen, optchannelout] = run_Opt( sim.en_optisyschannel,Document, Canvas, dir_in, dir_data, params, sim, edfa,txedfa );
     
-    if ( sim.en_optisyschannel == 1 && sim.en_read_ADS == 0 )
-        continue ;	    
-    end
-
     for numsim=1:sim.MAXSIM
         
         dataf = GenStim(params.totalbits, sim, 'prbs15.txt', dataf_t, ...
                         mod((numsim-1)*params.totalbits, 2^15-1) ) ; 
-        if ( sim.en_read_ADS == 1 )
-            noisyreceivein = optchannelout(:,(numsim-1)*packetlen+1:numsim*packetlen);
-        else
-            %=================  Transmitter =================        
-            ofdmout=  TxMain( dataf, preambleout, sim, params,  ...
-                              txedfa, edfa, laser, fiber,MZmod );
-                          
-            ofdmout = NSamplingFreqOffset( sim.txfreqoff, ...
-                                           sim.txtimeoff, ofdmout );
-           
-            if ( sim.en_gen_ADS == 1 )
-                optiout       = [ optiout ofdmout zeros(params.Nstream, 1000)]; 
-            else
-                ofdmout = ofdmout * sim.txgain ;
-                %============ Electric signal to optical ===============
-                if ( params.MIMO_emul == 1 )
-                    MIMO_ofdmout(1,:) =[ ofdmout(1,:) zeros(1, sim.zeropad1+sim.zeropad2+sim.zeropad3) ];
-                     MIMO_ofdmout(2,:) =[ zeros(1, sim.zeropad3)  ofdmout(1,:) zeros(1, sim.zeropad1+sim.zeropad2) ];
-                     ofdmout = MIMO_ofdmout;
-                end
-                ofdmout_jitter = TimeJitter( ofdmout, params.SampleTime, jitter );    
-                [ovoptofdmout, txphase_noise] =  ...
-                    elec2opt1( ofdmout_jitter, laser,  MZmod, txedfa, sim,params );
+        %=================  Transmitter =================        
+        ofdmout=  TxMain( dataf, preambleout, sim, params,  ...
+                          txedfa, edfa, laser, fiber,MZmod );
+
+        ofdmout = NSamplingFreqOffset( sim.txfreqoff, ...
+                                       sim.txtimeoff, ofdmout );
+
+        ofdmout = ofdmout * sim.txgain ;
+        %============ Electric signal to optical ===============
+        if ( params.MIMO_emul == 1 )
+            MIMO_ofdmout(1,:) =[ ofdmout(1,:) zeros(1, sim.zeropad1+sim.zeropad2+sim.zeropad3) ];
+             MIMO_ofdmout(2,:) =[ zeros(1, sim.zeropad3)  ofdmout(1,:) zeros(1, sim.zeropad1+sim.zeropad2) ];
+             ofdmout = MIMO_ofdmout;
+        end
+        ofdmout_jitter = TimeJitter( ofdmout, params.SampleTime, jitter );    
+        [ovoptofdmout, txphase_noise] =  ...
+            elec2opt1( ofdmout_jitter, laser,  MZmod, txedfa, sim,params );
 
 
-                ovoptofdmout = NLowPassFilter1( ovoptofdmout, sim.txfilter, sim.txLPF_en1 );
+        ovoptofdmout = NLowPassFilter1( ovoptofdmout, sim.txfilter, sim.txLPF_en1 );
 
-                %============ Channel ==================================
-                noisychannelout =  ...
-                    channel( ovoptofdmout , fiber, edfa, sim, params ); 
-                %============ Optical signal to electrial ==============
-                noisyreceivein = NCarrierFreqOffset( noisychannelout, laser.freqoff/sim.oversample );
-                
-                noisyreceivein = NLowPassFilter1( noisyreceivein, sim.rxfilter, sim.rxLPF_en );
-                [noisyreceivein, rxphase_noise] =   ...
-                    opt2elec1( noisyreceivein, lolaser,  PD, rxedfa, sim,params);               
+        %============ Channel ==================================
+        noisychannelout =  ...
+            channel( ovoptofdmout , fiber, edfa, sim, params ); 
+        %============ Optical signal to electrial ==============
+        noisyreceivein = NCarrierFreqOffset( noisychannelout, laser.freqoff/sim.oversample );
+
+        noisyreceivein = NLowPassFilter1( noisyreceivein, sim.rxfilter, sim.rxLPF_en );
+        [noisyreceivein, rxphase_noise] =   ...
+            opt2elec1( noisyreceivein, lolaser,  PD, rxedfa, sim,params);               
                 
 %                 noisyreceivein = noisyreceivein*sqrt(2);
-                
-            end
-        end  %if ( sim.en_optisyschannel == 1 )
-        if ( sim.en_gen_ADS == 0 )
-            %===================== OFDM Receiver ===================================
-            
+         
+        %===================== OFDM Receiver ===================================            
+        [sim.Launchpower, LP_dB]=   GetLaunchPwr(laser, sim, MZmod, txedfa );
 
-            [sim.Launchpower, LP_dB]=   GetLaunchPwr(laser, sim, MZmod, txedfa );
-             
+        noisyreceivein1 = noisyreceivein(:,sim.zerohead2 +1:size(noisyreceivein,2)) ;
+        noisyreceivein1_jitter = TimeJitter( noisyreceivein1, params.SampleTime, jitter );   
+        [demapperout, fftout, H_modified, cfo_phase, commonphase, snr] = ...
+            RxMain( noisyreceivein1_jitter, params, sim, fiber  );
 
-            noisyreceivein1 = noisyreceivein(:,sim.zerohead2 +1:size(noisyreceivein,2)) ;
-            noisyreceivein1_jitter = TimeJitter( noisyreceivein1, params.SampleTime, jitter );   
-            [demapperout, fftout, H_modified, cfo_phase, commonphase, snr] = ...
-                RxMain( noisyreceivein1_jitter, params, sim, fiber  );
-
-            %================= Analysis BER and PAPR ================= 
-            [frame, idealout,EVM_dB_sc, EVM_dB_sym ] = ...
-              FrameAnalysis( dataf,demapperout,fftout, cfo_phase, params, sim, snr);
-            totbiterror = totbiterror  + frame.Nbiterr ;
-            totESNR = totESNR + frame.ESNR ;
-            SEE = SEE + frame.cfo_err;  
-            bit_err_sim(SNRsim, numsim) =sum(frame.Nbiterr);% totbiterror/( numsim *params.totalbits);
-            if ( params.Nstream == 1 ||  params.MIMO_emul == 1)
-                diff_rtx =[ diff_rtx   frame.diff_rtx ];
-            else
-                diff_rtx =[ diff_rtx ;  frame.diff_rtx ];
-            end
-            
-            if ( mod(numsim,10) ==0 || numsim == sim.MAXSIM )    
-                str = ['the number of simulations :', num2str( numsim),  ...
-                 ' BER:',  num2str(totbiterror/( numsim *params.totalbits)), ...
-                ' MSEE:',  num2str(SEE/numsim), ...
-                ' CurSim: ', num2str(X_coor(SNRsim)) ] ;   
-                disp2(logfile, str);
-            end   
-%             if ( frame.Nbiterr > 1000 )
-%                 disp('tt');
-%             end
+        %================= Analysis BER and PAPR ================= 
+        [frame, idealout,EVM_dB_sc, EVM_dB_sym ] = ...
+          FrameAnalysis( dataf,demapperout,fftout, cfo_phase, params, sim, snr);
+        totbiterror = totbiterror  + frame.Nbiterr ;
+        totESNR = totESNR + frame.ESNR ;
+        SEE = SEE + frame.cfo_err;  
+        bit_err_sim(SNRsim, numsim) =sum(frame.Nbiterr);% totbiterror/( numsim *params.totalbits);
+        if ( params.Nstream == 1 ||  params.MIMO_emul == 1)
+            diff_rtx =[ diff_rtx   frame.diff_rtx ];
+        else
+            diff_rtx =[ diff_rtx ;  frame.diff_rtx ];
         end
+
+        if ( mod(numsim,10) ==0 || numsim == sim.MAXSIM )    
+            str = ['the number of simulations :', num2str( numsim),  ...
+             ' BER:',  num2str(totbiterror/( numsim *params.totalbits)), ...
+            ' MSEE:',  num2str(SEE/numsim), ...
+            ' CurSim: ', num2str(X_coor(SNRsim)) ] ;   
+            disp2(logfile, str);
+        end   
+
         if ( next_sim( sim, sum(totbiterror), numsim,maxsim, bit_err_sim ,SNRsim) == 1 )
-            break;
+%             break;
         end
     end
     
-   if ( sim.en_gen_ADS )
-        gennerate_ADS( sim.en_gen_ADS, optiout, dataf_t, dir_in, params, sim, edfa );
-        continue ;	 
-   end
    
    %% Report 
     BER(SNRsim) = max(1e-9, sum(totbiterror)/( numsim * params.totalbits));
@@ -256,10 +233,7 @@ if ( sim.noplot ~= 1 && SNRsim ~= 1 )
 end
 
 %%
-if ( sim.en_optisyschannel == 1 )
-   optsys.Quit;
-end
 
 % createfigure(commonphase,H_modified,  params, frame,sim, '' )
 % disp2(logfile,datestr(now,'HH:MM /mm/dd/yy'));
-
+toc;
