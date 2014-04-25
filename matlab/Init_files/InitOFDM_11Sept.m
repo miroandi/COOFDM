@@ -58,7 +58,7 @@ sim.subband=0;
 sim.exp_cfo =0 ;
 sim.en_ISFA =0;
 sim.ISFASize=5;
-sim.ISFASize1=2;
+sim.ISFASize1=3;
 
 %% OFDM parameter setting 
 params.Nbpsc =Nbpsc;
@@ -767,7 +767,7 @@ sim.cetype=1;
 sim.txLPF_en = 0  ;
 sim.txLPF_en1=1;
 sim.rxLPF_en =1 ;
-sim.SRRC_en = 1;
+sim.SRRC_en = 0;
 sim.CFOcomp_en =1; 
 sim.nlcompen =0; % Nonlinear compensation 
 sim.nlpostcompen = 0;
@@ -778,12 +778,12 @@ sim.en_OFDE=0;
 txedfa.gain_dB = 18.45;
 % txedfa.gain_dB  = txedfa.gain_dB  + 2;
 sim.subband1=2;
-sim.en_find_sync = 0;
-sim.en_find_cs = 0;
-sim.en_ISFA =0;
+sim.en_find_sync = 1;
+sim.en_find_cs = 1;
+sim.en_ISFA =1;
 sim.nophase = 0;
 sim.zeropad=0;
-sim.en_disp_env=1;
+sim.en_disp_env=0;
 sim.txPreemp_en =0;
 sim.nlcoef_cross =2/3;
 end
