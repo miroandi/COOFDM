@@ -137,20 +137,25 @@ axes11 = axes('Parent',figure1,...
 box(axes11,'on');
 hold(axes11,'all');
 
+phase_rot =  exp(  0 *1j*[0: (params.NFFT-1)]*2*pi/params.NFFT*(sim.syncpoint)) ;
 hmax =1.1* max( [max(abs(Y6(1,1,:))),max(abs(Y6(1,2,:))),max(abs(Y6(2,1,:))),max(abs(Y6(2,2,:)))]);
-H11(1:size(Y6,3))=Y6(1,1,1:size(Y6,3));   
+H11(1:size(Y6,3))=Y6(1,1,1:size(Y6,3))  ;  
+H11 = H11 .* phase_rot;
 plot(axes3, 1:params.NFFT, abs(H11),'g',  1:params.NFFT, real(H11),'r',   1:params.NFFT, imag(H11),'b'); 
 ylim(axes3, [-hmax hmax]);
 xlim(axes3, [1 params.NFFT ]);
 H12(1:size(Y6,3))=Y6(1,2,1:size(Y6,3));   
+H12 = H12 .* phase_rot;
 plot(axes9, 1:params.NFFT, abs(H12),'g',  1:params.NFFT, real(H12),'r',   1:params.NFFT, imag(H12),'b'); 
 ylim(axes9, [-hmax hmax]);
 xlim(axes9, [1 params.NFFT ]);
 H21(1:size(Y6,3))=Y6(2,1,1:size(Y6,3));   
+H21 = H21 .* phase_rot;
 plot(axes11, 1:params.NFFT, abs(H21),'g',  1:params.NFFT, real(H21),'r',   1:params.NFFT, imag(H21),'b'); 
 ylim(axes11, [-hmax hmax]);
 xlim(axes11, [1 params.NFFT ]);
-H22(1:size(Y6,3))=Y6(2,2,1:size(Y6,3));   
+H22(1:size(Y6,3))=Y6(2,2,1:size(Y6,3));  
+H22 = H22 .* phase_rot;  
 plot(axes10, 1:params.NFFT, abs(H22),'g',  1:params.NFFT, real(H22),'r',   1:params.NFFT, imag(H22),'b'); 
 ylim(axes10, [-hmax hmax]);
 xlim(axes10, [1 params.NFFT ]);
