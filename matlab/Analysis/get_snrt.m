@@ -1,13 +1,13 @@
-function [SNR_dB, OSNR_dB, mean_signal_power, mean_noise_power ] = get_snrt(sig1, Rs)
-%% Time domain SNR estimator
-% sig1 =noisyreceivein;
+function [SNR_dB, OSNR_dB, mean_signal_power, mean_noise_power ] = get_snrt(sig1, noise, Rs)
+% Time domain SNR estimator
+% SNR estimation is very rough. 
+% Use only for estimation.
 
-    len1 = length(sig1);
-    mean_dc = mean(sig1(len1-800:len1-300));
-    mean_signal_power = mean(abs(sig1(2001:len1-1000)   ) .^ 2);
-    mean_noise_power = mean(abs(sig1(len1-800:len1-100)).^2);
 
-%     disp( ['mean dc ', num2str(mean_dc)]);
+    mean_signal_power = mean(abs(sig1   ) .^ 2,2);
+    mean_noise_power = mean(abs(noise).^2,2);
+
+
     SNR= (mean_signal_power/  mean_noise_power);
     SNR_dB = 10*log10(SNR);
    
