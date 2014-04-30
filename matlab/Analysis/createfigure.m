@@ -83,10 +83,11 @@ box(axes3,'on');
 hold(axes3,'all');
 
 % Create plot
+phase_rot =  exp(  1 *1j*[0: (params.NFFT-1)]*2*pi/params.NFFT*(sim.syncpoint)) ; 
 if ( size(Y6,1)==1)
-    plot(abs(Y6),'Parent',axes3,'Color',[0 1 0]);
-    plot(real(Y6),'Parent',axes3,'Color',[1 0 0]);
-    plot(imag(Y6),'Parent',axes3,'Color',[0 0 1]);
+    plot(abs(Y6 .* phase_rot ),'Parent',axes3,'Color',[0 1 0]);
+    plot(real(Y6 .* phase_rot ),'Parent',axes3,'Color',[1 0 0]);
+    plot(imag(Y6 .* phase_rot ),'Parent',axes3,'Color',[0 0 1]);
 %       plot(angle(Y6),'Parent',axes3,'Color',[0 0 1]);
 else
     H11(1:size(Y6,3))=Y6(1,1,1:size(Y6,3));

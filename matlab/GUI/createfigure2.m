@@ -70,17 +70,22 @@ if ( handles.sim.fixed_sim == 1)
 else
     LIM =1.5;
 end
+phase_rot =  exp(  1 *1j*[0: (params.NFFT-1)]*2*pi/params.NFFT*(sim.syncpoint)) ;
 if ( handles.params.Nstream == 2 )
-H11(1:size(Y6,3))=Y6(1,1,1:size(Y6,3));   
+H11(1:size(Y6,3))=Y6(1,1,1:size(Y6,3))   ;   
+H11 = H11 .* phase_rot ; 
 plot(handles.axes_H11, 1:params.NFFT, abs(H11),'g',  1:params.NFFT, real(H11),'r',   1:params.NFFT, imag(H11),'b'); 
 ylim(handles.axes_H11, [-LIM LIM]);
-H12(1:size(Y6,3))=Y6(1,2,1:size(Y6,3));   
+H12(1:size(Y6,3))=Y6(1,2,1:size(Y6,3))  ;     
+H12 = H12 .* phase_rot ; 
 plot(handles.axes_H12, 1:params.NFFT, abs(H12),'g',  1:params.NFFT, real(H12),'r',   1:params.NFFT, imag(H12),'b'); 
 ylim(handles.axes_H12, [-LIM LIM]);
-H21(1:size(Y6,3))=Y6(2,1,1:size(Y6,3));   
+H21(1:size(Y6,3))=Y6(2,1,1:size(Y6,3)) ;     
+H21 = H21 .* phase_rot ;   
 plot(handles.axes_H21, 1:params.NFFT, abs(H21),'g',  1:params.NFFT, real(H21),'r',   1:params.NFFT, imag(H21),'b'); 
 ylim(handles.axes_H21, [-LIM LIM]);
-H22(1:size(Y6,3))=Y6(2,2,1:size(Y6,3));   
+H22(1:size(Y6,3))=Y6(2,2,1:size(Y6,3))  ;
+H22 = H22 .* phase_rot ;     
 plot(handles.axes_H22, 1:params.NFFT, abs(H22),'g',  1:params.NFFT, real(H22),'r',   1:params.NFFT, imag(H22),'b'); 
 ylim(handles.axes_H22, [-LIM LIM]);
 xlabel(handles.axes_H11,'Channel H11','fontsize',8);
