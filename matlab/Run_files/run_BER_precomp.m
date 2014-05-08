@@ -115,8 +115,8 @@ for SNRsim=1:length(X_coor)
         sim.nlc_coef =X_coor(SNRsim);        
     end     
     if ( sim.mode == 8 ) 
-        sim.syncpoint =X_coor(SNRsim);        
-%         sim.ttt = X_coor(SNRsim);        
+%         sim.syncpoint =X_coor(SNRsim);        
+        sim.subband = X_coor(SNRsim);        
     end 
     % Sample당 compensation할 phase 계산 
     sim.exp_cfo  = laser.freqoff * 2*pi ;     
@@ -182,7 +182,7 @@ for SNRsim=1:length(X_coor)
             diff_rtx =[ diff_rtx ;  frame.diff_rtx ];
         end
 
-        if ( mod(numsim,10) ==0 || numsim == sim.MAXSIM )    
+        if ( mod(numsim,1000) ==0 || numsim == sim.MAXSIM )    
             str = ['the number of simulations :', num2str( numsim),  ...
              ' BER:',  num2str(totbiterror/( numsim *params.totalbits)), ...
             ' MSEE:',  num2str(SEE/numsim), ...
@@ -213,7 +213,10 @@ mean_power_s =sum((mean(abs(noisychannelout) .^2)));
 mean_power_s1 =sum((mean(abs(ovoptofdmout) .^2)));
 MSNR(SNRsim)= ...
 10*log10(mean_power_s1/(mean_power_s-mean_power_s1));
-
+% if ( BER(SNRsim) > 6e-3)
+if ( BER(SNRsim) > 4e-3)
+    break;
+end 
 % createfigure(commonphase,H_modified,  params, frame,sim, '' )
 %     write_singlefile( sdirdlm, sim, params, BER(SNRsim), Q(SNRsim), ...
 %         bit_err_sim(SNRsim,:), totbiterror );
@@ -228,8 +231,8 @@ end
 %% Simulation for MMSE vs. Carrier frequency offset 
 if ( sim.noplot ~= 1 && SNRsim ~= 1 ) 
 %    plot_ber_cfo( sim, params, X_coor, BER, MSEE , edfa, laser );
-   plot_ber_sb( sim, params,   X_coor , BER, Q , edfa, laser );
-   write_outfile( dirdlm, sim, params, X_coor, BER, Q );
+   plot_ber_sb( sim, params,   X_coor(1:SNRsim) , BER(1:SNRsim), Q(1:SNRsim) , edfa, laser );
+   write_outfile( dirdlm, sim, params, X_coor(1:SNRsim) , BER(1:SNRsim), Q(1:SNRsim) );
 end
 
 %%

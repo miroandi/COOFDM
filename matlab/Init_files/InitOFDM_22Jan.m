@@ -783,5 +783,8 @@ fiber.PMD = 1 * 50*ps;
 %% BIT ALLOC 5
  
 % params.Nbpsc_sc([1, 50:51, 100]) = 2;
+
+sim.srrc_coef = SRRC(8,0.04); 
+sim.SRRC_en = 0;
 end
 % 10*log10((76+6)/256 )-25

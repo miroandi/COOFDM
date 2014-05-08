@@ -137,7 +137,7 @@ axes11 = axes('Parent',figure1,...
 box(axes11,'on');
 hold(axes11,'all');
 
-phase_rot =  exp(  0 *1j*[0: (params.NFFT-1)]*2*pi/params.NFFT*(sim.syncpoint)) ;
+phase_rot =  exp(  1 *1j*[0: (params.NFFT-1)]*2*pi/params.NFFT*(sim.syncpoint)) ;
 hmax =1.1* max( [max(abs(Y6(1,1,:))),max(abs(Y6(1,2,:))),max(abs(Y6(2,1,:))),max(abs(Y6(2,2,:)))]);
 H11(1:size(Y6,3))=Y6(1,1,1:size(Y6,3))  ;  
 H11 = H11 .* phase_rot;

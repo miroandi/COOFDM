@@ -3,24 +3,26 @@ function  plot_ber_sb( sim, params, X_coor, Y1, Y2 , edfa, laser )
 
     km=1000;MHz=1e6;
     shape(1)='s'; shape(2)='o';shape(3)='<'; shape(4)='d';
-    shape(5)='x'; shape(6)='.'; shape(7)='.'; shape(9)='*';
+    shape(5)='x'; shape(6)='.'; shape(7)='.'; shape(8)='*'; shape(9)='*';
     couleur(1) ='b'; 
     couleur(2) ='r';
     couleur(3) ='g';
     couleur(4) ='m';
     couleur(5) ='y';
     couleur(6) ='k';
-    couleur(7) ='c';    
+    couleur(7) ='c';   
+    couleur(8) ='r';    
     couleur(9) ='g';
     
-    color_str = couleur(sim.precomp_en+1);
-    shape_str =[shape(sim.precomp_en+1) '-'];
+    color_str = couleur(log2(sim.subband)+1);
+    shape_str =[shape(log2(sim.subband)+1) '-'];
     if ( sim.precomp_en == 0 )
         legend1 = ['Conventional OFDE']  ;
     else
         legend1 = ['Proposed'];
     end
-    legend2 = [ ' N_O_F_D_E ', num2str(params.NOFDE )];
+%     legend2 = [ ' N_O_F_D_E ', num2str(params.NOFDE )];
+    legend2 = [ ' N_s_b ', num2str( sim.subband )];
     legend_str='';
     if ( sim.mode ==  1 )     legend_str =[ legend1,', ', legend2 ]; end    
     if ( sim.mode ==  2 )     legend_str =[ legend1, ', ', legend2 ]; end    

@@ -10,7 +10,10 @@ function [precom_CD, delay, phase,delay_diff ] = NCalDelay_ver2(fiber, params, s
         
         % 2. Get center frequencies of each subband.
         freq = [  0:(params.NFFT/2-1) -params.NFFT/2:-1];
-        subband_freq = round(freq / (params.NFFT/sim.subband)  );
+%         subband_freq = round(freq / (params.NFFT/sim.subband)  );
+        subband_freq = mean(reshape(freq,  params.NFFT/sim.subband, sim.subband), 1);
+        subband_freq = reshape(ones(  params.NFFT /sim.subband, 1) * ...
+                            subband_freq, 1, params.NFFT  );
         freq = freq/(params.SampleTime *params.NFFT *params.OVERSAMPLE);
         subband_freq = subband_freq/(params.SampleTime *params.NFFT *params.OVERSAMPLE);
         
@@ -24,8 +27,6 @@ function [precom_CD, delay, phase,delay_diff ] = NCalDelay_ver2(fiber, params, s
         
         % 4. Get the residual phase difference due to CD
         phase =  phase_tot  -2 * pi * params.SampleTime * (delay .* freq );
-        phase = mod(phase,2*pi);
-%         phase =  2*pi*params.SampleTime * ((delay_float -delay) .* freq);
         precom_CD = delay(1);
         
     end   

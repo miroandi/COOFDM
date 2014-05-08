@@ -26,17 +26,21 @@ FiberLength=720*km;
 osnrin =22;
 noedfanoise = 0; en_AWGN = 0 ; nolinewidth = 0; nonoise= 0; b2b=0;
 jitter =0; 
+CD_residual=1;
 %% Simulation environment setting
 
 defaultStream = RandStream.getGlobalStream;
-savedState = defaultStream.State; 
+% savedState = defaultStream.State; 
 
 dirdlm = [ pwd '\'];
 sdirdlm = [dirdlm 'Single\'];
 logfile = [dirdlm '4QAMlog.txt'];
 delete(logfile);
 cd(dirdlm);
-
+%%
+% save ( 'savedState.mat', 'savedState');
+%%
+load 'savedState.mat'
 %% Simulation set
 maxsim=100;
 %% sim_mode=1
@@ -97,3 +101,45 @@ run('../Run_files/run_BER_precomp.m')
 end
 
 %%
+sim_mode =1 ;   
+syncpoint=NFFT * CPratio /2;
+subband=128;  
+figure1 =figure( 'FileName', ['BERvsSubband_112Gbps_' num2str(2^Nbpsc) 'QAM_'  num2str(maxsim) 's.fig']);  hold on;    
+noedfanoise = 0; en_AWGN = 1 ; nolinewidth = 0; nonoise= 0; b2b=0;
+% noedfanoise = 1; en_AWGN = 0 ; nolinewidth = 1; nonoise= 1; b2b=0;
+extcon =1;X_coor=[  300:150:1800]; 
+osnrin = snr2osnr( 28, 1/SampleTime) ; 
+ 
+precomp_en =1;
+for subband=2.^[2:4]    
+run('../Run_files/run_BER_precomp.m')
+ 
+end
+% ylim([1e-5 0.1])
+plot(X_coor, 3.8e-3 * ones(size(X_coor)), 'r-' )
+annotation(figure1,'textbox',[0.23  0.75 0.2 0.07 ],'String',...
+    { [' 112 Gbps SNR: 28 dB ', 'Combined linewidth:' num2str(2* laser.linewidth/1e3), ' kHz']}, ...
+    'HorizontalAlignment','center','FitBoxToText','off')
+ 
+legend('show') 
+ 
+cd(dirdlm);
+
+%%
+figure1 =figure( 'FileName', ['BERvsSubband_112Gbps_' num2str(2^Nbpsc) 'QAM_'  num2str(maxsim) 's.fig']);  hold on;    
+
+for subband=2.^[1:7]
+[ X_coor, BER, Q ]=read_outfile( ['matlab_sb', num2str(subband), '_16QAM_1prec_5cfo_1mode_500samples']);
+sim.subband =subband;
+plot_ber_sb( sim, params,   X_coor , BER, Q , edfa, laser );
+end 
+plot(X_coor, 3.8e-3 * ones(size(X_coor)), 'r-' );
+box on;
+
+%%
+% sim_mode =2;
+% precomp_en =1;  X_coor=[14.4:0.2:16.8];
+% for FiberLength=[150 300:150:1800]  * km     
+%     run('../Run_files/run_BER_precomp.m')   
+%     X_coor = X_coor + 0.3;
+% end
