@@ -54,6 +54,9 @@ if (  sim_new.subband == 0 )    sim_new.precom_CD =0;   sim_new.precomp_en = 0; 
 if ( sim_new.precomp_en == 0 )    sim_new.precom_CD =0;   sim_new.subband = 0;  end
 if ( fiber.Npol == 1)     fiber_new.DGD =0 ; end 
 
+if ( sim.offset_QAM == 1 )
+    params_new.CPratio =0 ;
+end 
 
 % sim_new.syncpoint = params_new.CPratio*params_new.NFFT/2;
 
