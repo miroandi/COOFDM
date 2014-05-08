@@ -84,6 +84,7 @@ params.RXstream = 2;
 params.LTF = zeros(1, params.NFFT);
 
 
+[sim, params] =InitOFDM_default( sim, params );
 if ( params.NFFT == 2048 )
     
     sim.ISFASize=7;
@@ -748,7 +749,6 @@ fiber.PMD = 1 * 50*ps;
 sim.cetype=1;
 
 
-[sim, params] =InitOFDM_default( sim, params );
 %% BIT ALLOC 1
 % 
 % params.Nbpsc_sc([1,  100]) = 2;

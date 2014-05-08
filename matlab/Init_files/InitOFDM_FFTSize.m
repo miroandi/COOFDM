@@ -31,6 +31,7 @@ Z0 = 377 ;                                       % ohm
 
 j=sqrt(-1);
 
+
 %% Simulation
 sim.MAXSIM = 1 ; % Number of simulation 
 sim.backtoback = 0; % Direct connection between transmitter and receiver
@@ -84,6 +85,7 @@ params.RXstream = 1;
 params.LTF = zeros(1, params.NFFT);
 
 
+[sim, params] =InitOFDM_default( sim, params );
 if ( params.NFFT == 2048 )
     
     sim.ISFASize=7;
@@ -796,6 +798,7 @@ sim.cetype=1;
 %% BIT ALLOC 5
  
 % params.Nbpsc_sc([1, 50:51, 100]) = 2;
+
 
 %% Simulation only
 % sim.oversample =4;
