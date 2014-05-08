@@ -748,6 +748,7 @@ fiber.PMD = 1 * 50*ps;
 sim.cetype=1;
 
 
+[sim, params] =InitOFDM_default( sim, params );
 %% BIT ALLOC 1
 % 
 % params.Nbpsc_sc([1,  100]) = 2;
