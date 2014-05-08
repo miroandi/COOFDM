@@ -38,6 +38,7 @@ function [demapperout, fftout, H_modified, cfo_phase, commonphase, snr, fsync_po
     %% Frequency domain
     [H, channelout, LTF_t, LTF2_t]                   = NRxChannelEst( sync_out, params, sim,iqamp); 
     H_modified                                       = ISFA( H, sim, params); 
+size(channelout)
     [fftout, commonphase, timingoffset, snr]         = FFTnComp( channelout, H_modified, params, sim, LTF_t, LTF2_t);
     demapperout                                      = NRxDemapper( params.en_bitalloc , fftout, params );
 end

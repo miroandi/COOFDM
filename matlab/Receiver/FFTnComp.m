@@ -13,10 +13,23 @@ function [fftout, commonphase,timingoffset,snr]  = FFTnComp( fftin, H_in, params
     ttt=[];
     for symbol=1:(params.NSymbol- params.MIMO_emul )
          %% Channel equalization 
+	if ( sim.offset_QAM == 0 )
         onesymbol_time = fftin(:, ...
         (params.RxSampleperSymbol *(symbol-1)+idx:params.RxSampleperSymbol *symbol) ...
         );           
         [onesymbol,sig_pwr, noise_pwr ]  = FFTnRemoveCP( onesymbol_time, H, params, sim);
+	else
+	    iindex = params.RxSampleperSymbol *(symbol-1.0)+idx : ...
+	         params.RxSampleperSymbol *(symbol+0.0) ;
+	    qindex = params.RxSampleperSymbol *(symbol-0.5)+idx : ...
+	         params.RxSampleperSymbol *(symbol+0.5) ;
+            [onesymbol_re,sig_pwr, noise_pwr ]  = ...
+                FFTnRemoveCP( fftin(:, iindex), H, params, sim);
+            [onesymbol_im,sig_pwr, noise_pwr ]  = ...
+                FFTnRemoveCP( fftin(:, qindex), H, params, sim);
+	    onesymbol = (onesymbol_re)+ (onesymbol_im) ;
+	    %onesymbol = complex( real(onesymbol_re), imag(onesymbol_im) );
+	end 
         if ( symbol ~= 1 ) % Compensate Sampling clock offset & CPE 
             onesymbol = Change_fixed_bit( onesymbol, sim.DCTOutbit );  
             onesymbol = onesymbol .* exp( -1j* timingoffset(symbol-1) * ...

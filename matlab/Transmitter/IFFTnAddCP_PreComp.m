@@ -15,7 +15,8 @@ function transmitout   = IFFTnAddCP_PreComp( transmitin, params, sim );
     NumSymbol = params.NSymbol ;
     num_tone =  length(params.SubcarrierIndex) + length(params.Pilot); 
     if (sim.subband == 0 )
-        out_d1 =1;
+        out_d1 = ( sim.offset_QAM == 1);
+        out_d1 = out_d1 + 1;
         transmitout = zeros( out_d1, NumSymbol * (1+CPratio) * oversample*nFFTSize   ) ;
     else
         if (sim.precomp_en == 2 )

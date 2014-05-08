@@ -16,7 +16,8 @@ function [H, channel_out, LTF_t, LTF2_t ] = ...
     channel_scomp = channel_in;
     
     syncpoint = sim.syncpoint * params.RxOVERSAMPLE ;
-    RXSymbolidx = (( params.IdxDataSymbol): params.NSample); 
+    RXSymbolidx = ( params.IdxDataSymbol);
+    %RXSymbolidx = (( params.IdxDataSymbol): params.NSample); 
 
     %% IQ balance
 %     sim.enIQbal =0;
@@ -68,7 +69,6 @@ function [H, channel_out, LTF_t, LTF2_t ] = ...
  
     channel_comp = channel_in(:,STFidx+1:d2) .* ...
         ( ones(d1,1) *  ( exp( -j * cfo_phase * (1:d2-STFidx))));
-%     channel_comp =  Change_fixed_bit_lim( channel_comp, sim.ADCbit , 1);
     channel_comp = Change_fixed_bit( channel_comp, sim.MulOutbit  );
    
     %% Channel estimation averaging
@@ -113,13 +113,13 @@ function [H, channel_out, LTF_t, LTF2_t ] = ...
             LTF2_t = avg_secondLTF ;
             H = CalcH2_EEO( LTF_t, LTF2_t, sim, params);
         end
-        channel_out = channel_comp(:, RXSymbolidx -syncpoint);
+        channel_out = channel_comp(:, RXSymbolidx -syncpoint:end );
 
     else
         %% AA type 
         if ( params.Nstream == 1 )
             LTF_t = avg_firstLTF;   
-            LTF = (fft( LTF_t, [],2) );
+            LTF = (fft( LTF_t, [], 2) );
             LTF = Change_fixed_bit( LTF, sim.FFTOutbit ); 
         else
             LTF_t = (avg_firstLTF*params.LTFtype(1,1) + ...
@@ -139,7 +139,7 @@ function [H, channel_out, LTF_t, LTF2_t ] = ...
             end
         end
         H = Change_fixed_bit( H * params.preamblefactor, sim.DCTOutbit );           
-        channel_out = channel_comp(:, RXSymbolidx -syncpoint);
+        channel_out = channel_comp(:, RXSymbolidx -syncpoint:end );
     end
     
     

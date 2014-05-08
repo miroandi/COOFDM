@@ -7,7 +7,7 @@ function out       = NPrecompCD_ver1(in1, in2, sim, params)
     delay = sim.delay ; 
     [d1, d2] =size(in1);
     d2 = d2 + size( in2,2);
-    zeropad = sim.zeropad + mod( d2,2);
+    zeropad = sim.zeropad + mod( d2,2) + (sim.offset_QAM == 1 )* abs(delay(2));
 %     zeropad = max(delay)-min(delay)+100;
 %     if( mod( zeropad, 2) == 1 ) zeropad = zeropad +1 ; end
     out = zeros( 1 ,  d2+ zeropad) ;

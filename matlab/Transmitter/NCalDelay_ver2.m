@@ -62,6 +62,9 @@ function [precom_CD, delay, phase,delay_diff ] = NCalDelay_ver2(fiber, params, s
        
         
     end
+    if ( sim.offset_QAM == 1 )
+        delay = [0, params.NFFT/2] ;
+    end 
     if ( sim.nophase ==1 )
         phase =phase * 0;
     end
