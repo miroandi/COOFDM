@@ -31,9 +31,8 @@ CD_residual=1;
 
 defaultStream = RandStream.getGlobalStream;
 % savedState = defaultStream.State; 
-
-dirdlm = [ pwd '\'];
-sdirdlm = [dirdlm 'Single\'];
+dirdlm = [ pwd dirdivider];
+sdirdlm = [dirdlm 'Single' dirdivider];
 logfile = [dirdlm '4QAMlog.txt'];
 delete(logfile);
 cd(dirdlm);
