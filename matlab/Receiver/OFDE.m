@@ -1,5 +1,5 @@
 function [ out, phase ] = OFDE(en_OFDE, in, fiber, params, sim, span, Overlap )
-    if ( en_OFDE == 0 )
+    if ( en_OFDE == 0 ||  sim.FiberLength == 0)
         out = in ;
         phase = 0;
         return
