@@ -2,6 +2,7 @@ figure;  hold on;
 [sim, params, MZmod,fiber,laser, iolaser, txedfa, edfa, rxedfa, PD]= InitOFDM_2SB(NFFT, 1,SampleTime );
 % CPratio =1/8;
 % SampleTime = 1/10/GHz;
+Nbpsc=4;
 X_coor = 6:2:22;
 SNR_dB =osnr2snr(X_coor, 1/params.SampleTime);
 sim_mode =2;

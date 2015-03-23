@@ -184,9 +184,34 @@ params_new.totalbits =totalbits;
 %     disp2( logfile,['Frequency estimation may fail.. out of bound']);
 % end
 %% Fixed simulation
+
+sim_new.ADCbit = 0;
+sim_new.DACbit = 0;
+sim_new.MulOutbit = 0;
+sim_new.ATANINbit = 0;
+sim_new.ATANbit = 0;
+sim_new.FFTOutbit = 0;
+sim_new.DCTOutbit = 0 ;
+sim_new.ATAN1bit = 0 ;
+sim_new.ATAN2bit =0 ;
+sim_new.CFObit =0;
+sim_new.CSInbit = 0;
+sim_new.CSSumOutbit =0 ;
+sim_new.CSMulOutbit = 0 ;
+sim_new.CSAppr =0 ;
+sim_new.CFOinbit = 0;
+sim_new.CFO1inbit =0 ;
+sim_new.CFOMulOutbit = 0;    
+sim_new.CFOSumOutbit = 0;
+sim_new.CFO1MulOutbit = 0;    
+sim_new.CFO1SumOutbit = 0;
+sim_new.FSInbit=0;
+sim_new.FSMulOutbit = 0 ;
+sim_new.FSSumOutbit = 0 ;
+sim_new.FSEst =0;
 if ( sim.fixed_sim ==1 )
-%     sim_new.ADCbit = 8;
-%     sim_new.DACbit = 8;
+    sim_new.ADCbit = 6;
+    sim_new.DACbit = 6;
 %     
 %     sim_new.MulOutbit = 10;
 %     sim_new.ATANINbit = 8;
@@ -196,31 +221,7 @@ if ( sim.fixed_sim ==1 )
 %     sim_new.DCTOutbit = dctbit ;
 %     sim_new.ATAN1bit = atan1bit ;
 %     sim_new.ATAN2bit =atan2bit ;
-else
-    sim_new.ADCbit = 0;
-    sim_new.DACbit = 0;
-    sim_new.MulOutbit = 0;
-    sim_new.ATANINbit = 0;
-    sim_new.ATANbit = 0;
-    sim_new.FFTOutbit = 0;
-    sim_new.DCTOutbit = 0 ;
-    sim_new.ATAN1bit = 0 ;
-    sim_new.ATAN2bit =0 ;
-    sim_new.CFObit =0;
-    sim_new.CSInbit = 0;
-    sim_new.CSSumOutbit =0 ;
-    sim_new.CSMulOutbit = 0 ;
-    sim_new.CSAppr =0 ;
-    sim_new.CFOinbit = 0;
-    sim_new.CFO1inbit =0 ;
-    sim_new.CFOMulOutbit = 0;    
-    sim_new.CFOSumOutbit = 0;
-    sim_new.CFO1MulOutbit = 0;    
-    sim_new.CFO1SumOutbit = 0;
-    sim_new.FSInbit=0;
-    sim_new.FSMulOutbit = 0 ;
-    sim_new.FSSumOutbit = 0 ;
-    sim_new.FSEst =0;
+
 end
 
 sim_new.DACLim = 10^(sim_new.DACClipping/20) * 1 * sim.dacgain ;%0.1098 ;

@@ -602,8 +602,8 @@ laser.launch_power = launch_power/4;%/params.Nstream ;  % Pol splitter
 
 lolaser.launch_power = RXLP/4;%/params.RXstream; % Pol splitter 
 
-laser.linewidth = 0.5* 100 *kHz; 
-lolaser.linewidth = 0.5* 100 *kHz; 
+laser.linewidth = 1 * 100 *kHz; 
+lolaser.linewidth = 1 * 100 *kHz; 
 sim.nolinewidth=0;
 laser.freqoff =0;
 lolaser.freqoff =0;
@@ -712,8 +712,9 @@ sim.en_fsync_plot =0;
 sim.en_constellation_plot = 0;
 sim.en_cs_plot = 0;
 sim.en_disp_env =0 ;
-sim.fixed_sim = 0;
-
+sim.fixed_sim = 1;
+sim.srrc_coef = SRRC(8,0.04); 
+sim.SRRC_en = 0;
 sim.en_optisyschannel =0;
 sim.en_read_ADS =0;
 sim.en_gen_ADS =0;
@@ -814,10 +815,10 @@ txedfa.gain_dB  = txedfa.gain_dB  + 2;
 sim.subband1=2;
 sim.en_find_sync = 0;
 sim.en_find_cs = 0;
-sim.en_ISFA =0;
+sim.en_ISFA =1;
 sim.nophase =0 ;
 sim.zeropad=1024;
-sim.en_disp_env=0;
+sim.en_disp_env=1;
 sim.ISFASize= 4 * params.NFFT/128;
 sim.ISFASize1= 2*round(2* params.NFFT/128);
 sim.txPreemp_en =0;
