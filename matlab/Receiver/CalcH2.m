@@ -11,11 +11,13 @@ function H = CalcH2( LTF_t, LTF2_t, sim, params)
         for ii=1:(length(params.LTFindexE))
             idx=params.LTFindexE(ii);
             H(:,1, idx) = ctranspose(Response(1,:,idx)) ...
-                      / ( Response(1,:,idx) *ctranspose(Response(1,:,idx)));
+                      / ( Response(1,:,idx) *ctranspose(Response(1,:,idx))) ;
         end
     else                
         for ii=1:(length(params.LTFindexE))
             H(:,:,params.LTFindexE(ii)) =inv(Response(:,:,params.LTFindexE(ii)));
+            H(:,:,params.LTFindexE(ii)) =H(:,:,params.LTFindexE(ii)) * ...
+               exp( (sim.offset_QAM == 1) * 1 *1j*pi/2* mod(params.LTFindexE(ii)-1+params.NFFT,2));
         end
     end 
 end

@@ -3,37 +3,40 @@ function [precom_CD, delay, phase,delay_diff ] = NCalDelay_ver2(fiber, params, s
     phase = zeros(1, params.NFFT  );
     precom_CD =0 ;
     delay_diff=0;
-    
-    if ( sim.subband ~= 0 )
-        % 1. Get phase difference due to CD
-        phase_tot = GetChannelPhase( params.NFFT, params.SampleTime, sim.FiberLength, fiber);
+    if ( sim.subband == 0 )
+        return;
+    end
+    FiberLength =sim.FiberLength * sim.CD_residual;
+ 
+    % 1. Get phase difference due to CD
+    phase_tot = GetChannelPhase( params.NFFT, params.SampleTime, FiberLength, fiber);
+
+    % 2. Get center frequencies of each subband.
+    freq = [  0:(params.NFFT/2-1) -params.NFFT/2:-1];
+%     subband_freq = round(freq / (params.NFFT/sim.subband)  ) ;
+    subband_freq = reshape(ones(params.NFFT/sim.subband,1) * mean(reshape( [  0:(params.NFFT/2-1) -params.NFFT/2:-1],  params.NFFT/sim.subband, sim.subband),1), 1, params.NFFT);
+    freq = freq/(params.SampleTime *params.NFFT *params.OVERSAMPLE);
+    subband_freq = subband_freq/(params.SampleTime *params.NFFT *params.OVERSAMPLE);
+
+    % 3. Get group delay difference 
+    GDD = GetChannelGDD( params.NFFT, params.SampleTime,  FiberLength, fiber,subband_freq);
+
+    % 4. Get time delay in unit of sampling clock period. 
+    delay_float =  GDD/params.SampleTime; 
+    delay_float(1) =0 ; 
+    delay = round( delay_float);% - min(delay_float));
+
+    % 4. Get the residual phase difference due to CD
+    phase =  phase_tot  -2 * pi * params.SampleTime * (delay .* freq );
+    phase = mod(phase,2*pi);
+%         phase =  2*pi*params.SampleTime * ((delay_float -delay) .* freq);
+    precom_CD = delay(1);
         
-        % 2. Get center frequencies of each subband.
-        freq = [  0:(params.NFFT/2-1) -params.NFFT/2:-1];
-%         subband_freq = round(freq / (params.NFFT/sim.subband)  );
-        subband_freq = mean(reshape(freq,  params.NFFT/sim.subband, sim.subband), 1);
-        subband_freq = reshape(ones(  params.NFFT /sim.subband, 1) * ...
-                            subband_freq, 1, params.NFFT  );
-        freq = freq/(params.SampleTime *params.NFFT *params.OVERSAMPLE);
-        subband_freq = subband_freq/(params.SampleTime *params.NFFT *params.OVERSAMPLE);
-        
-        % 3. Get group delay difference 
-        GDD = GetChannelGDD( params.NFFT, params.SampleTime, sim.FiberLength, fiber,subband_freq);
-        
-        % 4. Get time delay in unit of sampling clock period. 
-        delay_float =  GDD/params.SampleTime; 
-        delay_float(1) =0 ; 
-        delay = round( delay_float);% - min(delay_float));
-        
-        % 4. Get the residual phase difference due to CD
-        phase =  phase_tot  -2 * pi * params.SampleTime * (delay .* freq );
-        precom_CD = delay(1);
-        
-    end   
+ 
 
     if ( sim.precomp_en == 4 || sim.precomp_en == 2 || sim.precomp_en == 3) 
         deltaF = 1/(params.SampleTime *params.NFFT *params.OVERSAMPLE);
-        coef = sim.coeff * -2*pi*fiber.Beta2 *sim.FiberLength *deltaF ;
+        coef = sim.coeff * -2*pi*fiber.Beta2 * FiberLength *deltaF ;
         max_freq = max([params.SubcarrierIndex1 params.PilotIndex1]);
         min_freq = min([params.SubcarrierIndex1 params.PilotIndex1]);    
         delay_float =[ 0, coef/params.SampleTime * (max_freq + min_freq) ];

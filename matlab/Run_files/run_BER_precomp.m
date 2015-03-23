@@ -202,6 +202,7 @@ for SNRsim=1:length(X_coor)
    %% Report 
     BER(SNRsim) = max(1e-9, sum(totbiterror)/( numsim * params.totalbits));
     Q(SNRsim) = 10*log10(2* totESNR / numsim );
+    Q(SNRsim) =   totESNR / numsim  ;
     MSEE(SNRsim) =  SEE / numsim ;
     str = ['FiberLength :', num2str( sim.FiberLength/km ), ' km, sim.precom_CD  ', ...
     num2str( sim.precom_CD ), ...
@@ -217,9 +218,9 @@ mean_power_s1 =sum((mean(abs(ovoptofdmout) .^2)));
 MSNR(SNRsim)= ...
 10*log10(mean_power_s1/(mean_power_s-mean_power_s1));
 
-% if ( BER(SNRsim) > 4e-3)
-%     break;
-% end 
+if ( BER(SNRsim) < 3.5e-3 )
+    break;
+end
 % createfigure(commonphase,H_modified,  params, frame,sim, '' )
 %     write_singlefile( sdirdlm, sim, params, BER(SNRsim), Q(SNRsim), ...
 %         bit_err_sim(SNRsim,:), totbiterror );
