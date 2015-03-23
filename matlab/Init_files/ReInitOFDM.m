@@ -54,8 +54,12 @@ if (  sim_new.subband == 0 )    sim_new.precom_CD =0;   sim_new.precomp_en = 0; 
 if ( sim_new.precomp_en == 0 )    sim_new.precom_CD =0;   sim_new.subband = 0;  end
 if ( fiber.Npol == 1)     fiber_new.DGD =0 ; end 
 
+if ( sim.offset_QAM == 1 )
+    params_new.CPratio =0 ;
+    sim_new.syncpoint =0;
+end 
 
-% sim_new.syncpoint = params_new.CPratio*params_new.NFFT/2;
+sim_new.syncpoint = params_new.CPratio*params_new.NFFT/2;
 
 
 
@@ -183,6 +187,15 @@ params_new.totalbits =totalbits;
 % if (  laser.freqoff * params_new.NFFT > 0.5 )
 %     disp2( logfile,['Frequency estimation may fail.. out of bound']);
 % end
+%%
+
+ 
+    Alpha =   params.CPratio  ; % RX Alpha 
+    Alpha=1/16;
+    Nt = 2*round(params.NFFT*Alpha /2); % Nb. samples in taper region 
+    p = 1/2*(1+cos(pi*[-Nt+1/2:Nt-1/2]/Nt)); % Raised-Cosine in TD 
+    sim_new.rcfilter = p(Nt+1:2*Nt);
+    p = [p(1:Nt), ones(1, params_new.NFFT * (1 + params.CPratio-Nt)), p(Nt+1:2*Nt)]; % Add ones in middle 
 %% Fixed simulation
 
 sim_new.ADCbit = 0;

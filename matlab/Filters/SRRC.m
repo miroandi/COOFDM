@@ -1,11 +1,11 @@
 % Square root raised cosine filter to combat with intersymbol interference.
 
-function [response] = SRRC(os_factor,roll_off)
+function [response] = SRRC(os_factor,roll_off, resp_sample)
 
  %os_factor=oversampling factor
  
 a=roll_off;
-t=-32:1/os_factor:32; %Limiting the response to -4T to 4T
+t=-resp_sample:1/os_factor:resp_sample; %Limiting the response to -4T to 4T
 %This can be increased or decreased according to the requirement
  
 p=zeros(1,length(t));

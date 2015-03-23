@@ -84,6 +84,7 @@ params.RXstream = 2;
 params.LTF = zeros(1, params.NFFT);
 
 
+[sim, params] =InitOFDM_default( sim, params );
 if ( params.NFFT == 2048 )
     
     sim.ISFASize=7;
@@ -595,7 +596,7 @@ txedfa.nonoise =noedfanoise;
 edfa.length = 75*km; %400* km
 edfa.hv = h*c/lambda0;
 edfa.gain_dB =AlphadB * edfa.length ;
-edfa.NF_dB = 5  ;   
+edfa.NF_dB = 5.5  ;   
 edfa.nonoise =noedfanoise;
 
 rxedfa.length = 80*km; %400* km
@@ -679,8 +680,16 @@ sim.txpreemp.a = 1;
 sim.txpreemp.b =  [1 -0.1];
 % impulse response of SRRC filter
 % overSampling_Factor=1, (Response time  -4~ 4 )
-% alpha /roll off factor = 0.4
-sim.srrc_coef = SRRC(8,0.04); 
+% alpha /roll off factor = 0.4  
+sim.srrc_ov = 1;
+sim.srrc_coef = SRRC(sim.srrc_ov ,1, 8); 
+h=fdesign.pulseshaping(params.NFFT,'Square Root Raised Cosine', 'N,Beta', (params.NFFT+16));
+% h=fdesign.pulseshaping(1,'Square Root Raised Cosine', 'N,Beta', ( 16));
+h.RolloffFactor =1/32;
+Hd=design(h);
+% fvtool(Hd,'impulse');
+% sim.srrc_coef =Hd.Numerator;
+
 sim.txLPF_en = 0  ;
 sim.txLPF_en1= 0;
 sim.SRRC_en = 0;
@@ -723,7 +732,7 @@ sim.en_fsync_plot =0;
 
 
 fiber.Npol =params.RXstream ; 
-sim.en_ISFA=1;
+sim.en_ISFA=0;
 sim.preemphasis_H_en =0;
 sim.wavelength =0;
 params.MIMO_emul =1;
@@ -743,7 +752,7 @@ sim.tone = 10;%2;
 sim.enIQbal =0 ;
 sim.decision_feedback_cpe  =1;
  
-sim.PMDtype = 1; % 0 : Use fiber.Dp, 1: fiber.PMD 
+sim.PMDtype = 0; % 0 : Use fiber.Dp, 1: fiber.PMD 
 fiber.PMD = 1 * 50*ps;
 sim.cetype=1;
 
@@ -765,10 +774,11 @@ sim.cetype=1;
 
 %% Simulation only
 sim.txLPF_en = 0  ;
-sim.txLPF_en1=1;
+sim.txLPF_en1=0;
 sim.rxLPF_en =1 ;
 sim.SRRC_en = 0;
-sim.CFOcomp_en =1; 
+sim.CFOcomp_en =0; 
+sim.enCPEcomp =1;
 sim.nlcompen =0; % Nonlinear compensation 
 sim.nlpostcompen = 0;
 sim.nlc_coef = 1  ;%/max(1,sim.nlcompen+sim.nlpostcompen) ;
@@ -780,11 +790,12 @@ txedfa.gain_dB = 18.45;
 sim.subband1=2;
 sim.en_find_sync = 0;
 sim.en_find_cs = 0;
-sim.en_ISFA =1;
 sim.nophase = 0;
 sim.zeropad=0;
 sim.en_disp_env=0;
 sim.txPreemp_en =0;
 sim.nlcoef_cross =2/3;
+sim.offset_QAM =0;
+params.rec_window = 0;
 end
 % 10*log10((76+6)/256 )-25

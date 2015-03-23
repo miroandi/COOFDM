@@ -83,7 +83,7 @@ params.Nstream = 1 ;
 params.RXstream = 1;
 params.LTF = zeros(1, params.NFFT);
 
-
+[sim, params] =InitOFDM_default( sim, params );
 if ( params.NFFT == 2048 )
     
     sim.ISFASize=7;
@@ -784,7 +784,7 @@ fiber.PMD = 1 * 50*ps;
  
 % params.Nbpsc_sc([1, 50:51, 100]) = 2;
 
-sim.srrc_coef = SRRC(8,0.04); 
+sim.srrc_coef = SRRC(sim.srrc_ov ,1, 8); 
 sim.SRRC_en = 0;
 end
 % 10*log10((76+6)/256 )-25

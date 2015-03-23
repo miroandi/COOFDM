@@ -1,6 +1,6 @@
 
 
-function out   = ifft_band_Precomp( in_flat , params, sim )
+function out   = ifft_band( in_flat , params, sim )
       in = in_flat ;
       
     if ( sim.preemphasis_H_en == 1 )
@@ -13,7 +13,17 @@ function out   = ifft_band_Precomp( in_flat , params, sim )
     end
 
     if ( sim.subband == 0 )
-        out = ifft(in);        
+        if ( sim.offset_QAM == 1) 
+        	out(1,:) = (ifft(real(in) .* exp(1*1j* pi/2 * mod([0:params.NFFT-1],2 ))));        
+        	out(2,:) = (ifft(imag(in) .* exp(1*1j* pi/2 * mod([1:params.NFFT],2 )))); 
+%             in_shift_re =real(in) .* exp(1*1j* pi/2 * mod([0:params.NFFT-1],2 ));        
+%             in_shift_im =imag(in) .* exp(1*1j* pi/2 * mod([1:params.NFFT],2 ));
+%         	out  = ifft( complex(in_shift_re, in_shift_im)); 
+%             out(1,:) = real( ifft( in));        
+%             out(2,:) = imag( ifft( in)); 
+        else 
+        	out = ifft(in);        
+        end 
         out =  Change_fixed_bit_lim( out, sim.fftout , sim.fft_max  );
     else
         if ( sim.precomp_en == 1 )

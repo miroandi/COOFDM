@@ -1,7 +1,7 @@
 function  plot_ber_sb( sim, params, X_coor, Y1, Y2 , edfa, laser )
   
 
-    km=1000;MHz=1e6;
+    km=1000;MHz=1e6;nm=1e-9;ps=1e-12;
     shape(1)='s'; shape(2)='o';shape(3)='<'; shape(4)='d';
     shape(5)='x'; shape(6)='.'; shape(7)='.'; shape(8)='*'; shape(9)='*';
     couleur(1) ='b'; 
@@ -34,6 +34,8 @@ function  plot_ber_sb( sim, params, X_coor, Y1, Y2 , edfa, laser )
     
     tt =1;
     if ( sim.mode == 6 )   tt=MHz *params.SampleTime*144; end %params.repSTF*params.rep2STF; end
+    GDD=17  /km ;
+    if ( sim.mode == 1 )   tt= GDD  ; end %params.repSTF*params.rep2STF; end
     
 %     semilogy( tt* X_coor, BER2Q(Y1(1:length(X_coor))), ...   
 %         [ color_str shape_str ], ...
@@ -51,10 +53,11 @@ function  plot_ber_sb( sim, params, X_coor, Y1, Y2 , edfa, laser )
 %     ylabel('Q ') ; xlabel1 =' FiberLengths ' ; 
     ylabel(' (BER) ') ; xlabel1 =' FiberLengths ' ; 
     str1='';
-    if ( sim.mode ==  2 )      ylabel('Q ') ;  end
+%     if ( sim.mode ==  2 )      ylabel('Q ') ;  end
     if ( sim.mode ==  2 )      xlabel1 ='OSNR(dB) ' ;  str1='';    end
     if ( sim.mode ==  4 )      xlabel1 ='SNR(dB) ' ;  str1='';    end
     if ( sim.mode ==  1 )      xlabel1='Fiber Length(km) ' ;  str1=['NF ' num2str( edfa.NF_dB) 'dB '];   end    
+%     if ( sim.mode ==  1 )      xlabel1='CD (ps/nm) ' ;  str1=['NF ' num2str( edfa.NF_dB) 'dB '];   end    
     if ( sim.mode ==  3 )      xlabel1='EDFA NF ' ;  str1=['Fiber length' num2str(sim.FiberLength/km) 'km '];   end
     if ( sim.mode ==  5 )      xlabel1='Fiber Length(km) ' ;  str1=['SNR ' num2str( sim.SNR(1)) 'dB '];   end    
     if ( sim.mode ==  6 )      xlabel1='CFO frequency '  ;  str1=['Fiber length' num2str(sim.FiberLength/km) 'km '];   end
@@ -65,5 +68,5 @@ function  plot_ber_sb( sim, params, X_coor, Y1, Y2 , edfa, laser )
         str2='';
     end
     xlabel(xlabel1);
-    title(['BER vs ' xlabel1 'with a given ' str1,str2]);
+%     title(['BER vs ' xlabel1 'with a given ' str1,str2]);
 end

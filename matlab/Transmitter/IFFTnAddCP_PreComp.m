@@ -15,7 +15,8 @@ function transmitout   = IFFTnAddCP_PreComp( transmitin, params, sim );
     NumSymbol = params.NSymbol ;
     num_tone =  length(params.SubcarrierIndex) + length(params.Pilot); 
     if (sim.subband == 0 )
-        out_d1 =1;
+        out_d1 = ( sim.offset_QAM == 1);
+        out_d1 = out_d1 + 1;
         transmitout = zeros( out_d1, NumSymbol * (1+CPratio) * oversample*nFFTSize   ) ;
     else
         if (sim.precomp_en == 2 )
@@ -50,14 +51,14 @@ function transmitout   = IFFTnAddCP_PreComp( transmitin, params, sim );
              ifftout = [ ifft_band( (OverSymbol(1,:) ), params, sim) ; ...
                            ifft_band( (OverSymbol(2,:) ), params, sim) ; ];
         end        
-%         ifftout = circshift( ifftout, [0, params.CPshift]) ;
-        if ( sim.precomp_en == 2 || sim.precomp_en == 3 )            
-            guardout = circshift(  [ifftout(:,params.CPIndex), ifftout] , [0, params.CPshift])  ;
+        % CP insertion  
+        guardout = circshift(  [ifftout(:,params.CPIndex), ifftout] , [0, params.CPshift])  ;
+
+        if ( sim.precomp_en == 2 || sim.precomp_en == 3 )   
             transmitout(:, ((k-1)*nFFTSize/sim.subband1*oversample*(1+CPratio) +1:k*nFFTSize/sim.subband1*oversample*(1+CPratio))) = guardout;              
-         else                         
-            guardout = circshift(  [ifftout(:,params.CPIndex), ifftout] , [0, params.CPshift]); 
+        else                         
             transmitout(:, ((k-1)*nFFTSize*oversample*(1+CPratio) +1:k*nFFTSize*oversample*(1+CPratio))) = guardout;       
-           end
+        end
     end
 
     transmitout = 1/sqrt( num_tone) *transmitout;
