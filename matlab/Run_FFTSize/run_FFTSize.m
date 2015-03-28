@@ -101,7 +101,7 @@ DataRate = 112;
 noedfanoise = 0; en_AWGN = 1 ; nolinewidth = 0; nonoise= 0; b2b=0;
 extcon =1;X_coor= 75; 
 SNR_dB = 28;
-LineWidth = 50;
+LineWidth = 100;
 
 
 if ( nolinewidth == 1)
@@ -149,7 +149,7 @@ ylabel('Q factor')
 ylim([ 8 15])
 
 %% BER as a function of Launch power 
-maxsim = 100;
+maxsim = 10;
 sim_mode = 3 ;   
 DataRate = 112;
 noedfanoise = 0; en_AWGN = 1 ; nolinewidth = 0; nonoise= 0; b2b=0;

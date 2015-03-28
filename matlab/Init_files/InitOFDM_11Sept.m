@@ -732,7 +732,7 @@ sim.en_fsync_plot =0;
 
 
 fiber.Npol =params.RXstream ; 
-sim.en_ISFA=0;
+sim.en_ISFA=1;
 sim.preemphasis_H_en =0;
 sim.wavelength =0;
 params.MIMO_emul =1;
@@ -784,7 +784,7 @@ sim.nlpostcompen = 0;
 sim.nlc_coef = 1  ;%/max(1,sim.nlcompen+sim.nlpostcompen) ;
 sim.multi_level =0;
 sim.ofde = 1;
-sim.en_OFDE=0;
+sim.en_OFDE=1;
 txedfa.gain_dB = 18.45;
 % txedfa.gain_dB  = txedfa.gain_dB  + 2;
 sim.subband1=2;
@@ -792,7 +792,7 @@ sim.en_find_sync = 0;
 sim.en_find_cs = 0;
 sim.nophase = 0;
 sim.zeropad=0;
-sim.en_disp_env=0;
+sim.en_disp_env=1;
 sim.txPreemp_en =0;
 sim.nlcoef_cross =2/3;
 sim.offset_QAM =0;

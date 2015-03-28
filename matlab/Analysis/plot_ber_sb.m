@@ -14,8 +14,13 @@ function  plot_ber_sb( sim, params, X_coor, Y1, Y2 , edfa, laser )
     couleur(8) ='r';    
     couleur(9) ='g';
     
-    color_str = couleur(log2(sim.subband)+1);
-    shape_str =[shape(log2(sim.subband)+1) '-'];
+
+    subband=sim.subband;
+    if ( subband == 0 )
+        subband = subband +1;
+    end
+    color_str = couleur(log2(subband)+1);
+    shape_str =[shape(log2(subband)+1) '-'];
     if ( sim.precomp_en == 0 )
         legend1 = ['Conventional OFDE']  ;
     else
@@ -35,7 +40,7 @@ function  plot_ber_sb( sim, params, X_coor, Y1, Y2 , edfa, laser )
     tt =1;
     if ( sim.mode == 6 )   tt=MHz *params.SampleTime*144; end %params.repSTF*params.rep2STF; end
     GDD=17  /km ;
-    if ( sim.mode == 1 )   tt= GDD  ; end %params.repSTF*params.rep2STF; end
+    if ( sim.mode == 1 )   tt= 1  ; end %params.repSTF*params.rep2STF; end
     
 %     semilogy( tt* X_coor, BER2Q(Y1(1:length(X_coor))), ...   
 %         [ color_str shape_str ], ...

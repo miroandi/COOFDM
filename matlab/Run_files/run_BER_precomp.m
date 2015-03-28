@@ -5,8 +5,8 @@ mW =1e-3;
 if ( sim_mode ~= 0 )
     
     [sim, params, MZmod,fiber,laser, iolaser, txedfa, edfa, rxedfa, PD]= ...
-        InitOFDM_FFTSize(NFFT, 1,SampleTime );
-%     InitOFDM_11Sept(NFFT, 1,SampleTime );
+        InitOFDM_11Sept(NFFT, 1,SampleTime );
+%     InitOFDM_FFTSize(NFFT, 1,SampleTime );
 
     sim.tone = tone * params.NFFT/128;
     sim.MAXSIM= maxsim;
@@ -24,7 +24,7 @@ if ( sim_mode ~= 0 )
     sim.mode = sim_mode; % 0: single simulation 1 : length, 2: SNR  4: bit (fixed sim) 
     sim.subband=subband;
     sim.extcon = extcon;
-    laser.freqoff   = 1/params.SampleTime /2/params.NFFT/10 ;% 1/params.NFFT  * 0.66   ; % 1* 265 *MHz;%87*MHz; %96
+    laser.freqoff   = 0 * 1/params.SampleTime /2/params.NFFT/10 ;% 1/params.NFFT  * 0.66   ; % 1* 265 *MHz;%87*MHz; %96
     
     
     dir_data='.';    
@@ -32,7 +32,7 @@ if ( sim_mode ~= 0 )
     params.NOFDE = NOFDE;
     sim.osnrin = osnrin;    
     sim.syncpoint=syncpoint;    
-    sim.syncpoint=params.NFFT * params.CPratio /2;  
+%     sim.syncpoint=params.NFFT * params.CPratio /2;  
     sim.txLPF_en =0 ;
   
     rxedfa.nonoise =noedfanoise;
@@ -41,7 +41,7 @@ if ( sim_mode ~= 0 )
     params.CPratio =CPratio;
     params.MIMO_emul = 0;
 %     sim.en_find_cs=1;
-   txedfa.gain_dB =  gain_dB; 
+%    txedfa.gain_dB =  gain_dB; 
 %    params.NSymbol = 50;
 % fiber.Npol =params.RXstream ;   
     run('../Optisys/init_optisys.m');
@@ -118,8 +118,8 @@ for SNRsim=1:length(X_coor)
         sim.nlc_coef =X_coor(SNRsim);        
     end     
     if ( sim.mode == 8 ) 
-%         sim.syncpoint =X_coor(SNRsim);        
-        sim.subband = X_coor(SNRsim);        
+        sim.syncpoint =X_coor(SNRsim);        
+%         sim.subband = X_coor(SNRsim);        
     end 
     % Sample당 compensation할 phase 계산 
     sim.exp_cfo  = laser.freqoff * 2*pi ;     
@@ -218,9 +218,9 @@ mean_power_s1 =sum((mean(abs(ovoptofdmout) .^2)));
 MSNR(SNRsim)= ...
 10*log10(mean_power_s1/(mean_power_s-mean_power_s1));
 
-if ( BER(SNRsim) < 3.5e-3 )
-    break;
-end
+% if ( BER(SNRsim) < 3.5e-3 )
+%     break;
+% end
 % createfigure(commonphase,H_modified,  params, frame,sim, '' )
 %     write_singlefile( sdirdlm, sim, params, BER(SNRsim), Q(SNRsim), ...
 %         bit_err_sim(SNRsim,:), totbiterror );

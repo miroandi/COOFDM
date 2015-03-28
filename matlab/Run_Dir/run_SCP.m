@@ -45,18 +45,19 @@ load 'savedState.mat';
 maxsim=100;
 %% sim_mode=1
 sim_mode =1 ;   
-syncpoint=NFFT * CPratio /2;
+
 subband=128;  
 figure1 =figure( 'FileName', ['BERvsFiberLength_112Gbps_' num2str(2^Nbpsc) 'QAM_'  num2str(maxsim) 's.fig']);  hold on;    
 noedfanoise = 0; en_AWGN = 1 ; nolinewidth = 0; nonoise= 0; b2b=0;
 % noedfanoise = 1; en_AWGN = 0 ; nolinewidth = 1; nonoise= 1; b2b=0;
-extcon =1;X_coor=[ 150:150:2400]; 
-osnrin = snr2osnr( 32, 1/SampleTime) ; 
+extcon =1;X_coor=[ 1500:300:2400]; 
+osnrin = snr2osnr( 26, 1/SampleTime) ; 
 precomp_en =0; en_OFDE =1;
-% run('../Run_files/run_BER_precomp.m')
-precomp_en =1;
+% syncpoint=NFFT * CPratio /2;
 run('../Run_files/run_BER_precomp.m')
-
+precomp_en =1;
+syncpoint=1;
+% run('../Run_files/run_BER_precomp.m')
 
 % ylim([1e-5 0.1])
 plot(X_coor, 3.8e-3 * ones(size(X_coor)), 'r-' )

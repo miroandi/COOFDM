@@ -52,6 +52,8 @@ end
 
 if (  sim_new.subband == 0 )    sim_new.precom_CD =0;   sim_new.precomp_en = 0;  end
 if ( sim_new.precomp_en == 0 )    sim_new.precom_CD =0;   sim_new.subband = 0;  end
+if ( sim_new.precomp_en == 0 )    params_new.rec_window = 1;  end
+if ( sim_new.precomp_en == 1 )    params_new.rec_window = 0; sim_new.syncpoint =1; end
 if ( fiber.Npol == 1)     fiber_new.DGD =0 ; end 
 
 if ( sim.offset_QAM == 1 )
@@ -59,7 +61,7 @@ if ( sim.offset_QAM == 1 )
     sim_new.syncpoint =0;
 end 
 
-sim_new.syncpoint = params_new.CPratio*params_new.NFFT/2;
+% sim_new.syncpoint = params_new.CPratio*params_new.NFFT/2;
 
 
 
@@ -188,13 +190,31 @@ params_new.totalbits =totalbits;
 %     disp2( logfile,['Frequency estimation may fail.. out of bound']);
 % end
 %%
-
- 
     Alpha =   params.CPratio  ; % RX Alpha 
-    Alpha=1/16;
+%     Alpha=1/16;
     Nt = 2*round(params.NFFT*Alpha /2); % Nb. samples in taper region 
     p = 1/2*(1+cos(pi*[-Nt+1/2:Nt-1/2]/Nt)); % Raised-Cosine in TD 
     sim_new.rcfilter = p(Nt+1:2*Nt);
+    sim_new.rcfilter = [ 0.9904    0.9619    0.9157    0.8536    0.7778    0.6913    0.5975    0.5000    0.4025    0.3087    0.2222    0.1464    0.0843    0.0381    0.0096         0];
+    sim_new.rcfilter = [  1, 0.99524247,  0.97693664,  0.93835436,  0.87585436, ...
+                          0.78943664,  0.68274247,  0.5625    ,  0.4375    ,  0.31725753, ...
+                          0.21056336,  0.12414564,  0.06164564,  0.02306336,  0.00475753, 0];
+    sim_new.rcfilter = [0.99664959,  0.98365206,  0.95587428,  0.90996585, ...
+        0.84476317,  0.76142984,  0.66331626,  0.55555556,  0.44444444, ...
+        0.33668374,  0.23857016,  0.15523683,  0.09003415,  0.04412572, ...
+        0.01634794,  0.00335041]; % Hanning 5.18e-3
+    sim_new.rcfilter = [0.99130614,  0.96558877,  0.92391969, ...
+        0.86801716,  0.8001486 ,  0.7230036 ,  0.63954555,  0.55285177, ...
+        0.46595223,  0.38167723,  0.30252315,  0.23054433,  0.16727668, ...
+        0.11369652,  0.07021566,  0.03671089]; % Kaiser filter_coef with beta=5, 4.6e-3
+%     sim_new.rcfilter = [ 0.99727662,  0.9891341 ,  0.97565495, ...
+%         0.95697558,  0.93328466,  0.90482086,  0.87186995,  0.83476143, ...
+%         0.79386455,  0.74958391,  0.70235465,  0.65263731,  0.60091234, ...
+%         0.54767454,  0.49342719,  0.43867628]; % Kaiser filter_coef with beta=2 , 1e-2
+%     sim_new.rcfilter = [ 0.98432197,  0.93858367,  0.86651472, ...
+%         0.77382938,  0.66755331,  0.55522579,  0.44409171,  0.34039362,  ...
+%         0.24885213,  0.17238843,  0.11210139,  0.06747208,  0.0367369 , ...
+%         0.01735164,  0.00646526,  0.00133251]; %Kaiser filter_coef with beta=8.6
     p = [p(1:Nt), ones(1, params_new.NFFT * (1 + params.CPratio-Nt)), p(Nt+1:2*Nt)]; % Add ones in middle 
 %% Fixed simulation
 
@@ -325,12 +345,13 @@ if ( sim.en_disp_env )
     disp2( logfile,['Norminal Datarate ', num2str( normdatarate / 10^9  ), ' Gbps ']);
     disp2( logfile,['FFT size ', num2str( params_new.NFFT ), ' ', ' CP cnt', num2str(params_new.NFFT * params_new.CPratio)]);
     disp2( logfile,['syncpoint ', num2str(sim_new.syncpoint ), ' ']);
+    disp2( logfile,['Pulse shape window ', num2str(params_new.rec_window  ), ' ']);
     disp2( logfile,['Precomp enable ', num2str(  sim_new.precomp_en ), '. subband ', num2str(sim_new.subband)]);
     disp2( logfile,['CPE enable ', num2str(  sim_new.enCPEcomp )]);
     disp2( logfile,['CFO type ', num2str(  sim_new.cfotype)] ); 
     disp2( logfile,['Symbol sync search ', num2str(  sim_new.en_find_sync)] );
     disp2( logfile,['CS sync search ', num2str(  sim_new.en_find_cs)] );
-    disp2( logfile,['OFDE size ', num2str( params_new.NOFDE )]);    
+    disp2( logfile,['OFDE size ', num2str( params_new.NOFDE )]);        
     disp2(logfile,datestr(now,'HH:MM /mm/dd/yy'))
 
 

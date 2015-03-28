@@ -83,7 +83,7 @@ params.Nstream = 1 ;
 params.RXstream = 1;
 params.LTF = zeros(1, params.NFFT);
 
-
+[sim, params] =InitOFDM_default( sim, params );
 if ( params.NFFT == 2048 )
     
     sim.ISFASize=7;
@@ -713,7 +713,7 @@ sim.en_constellation_plot = 0;
 sim.en_cs_plot = 0;
 sim.en_disp_env =0 ;
 sim.fixed_sim = 1;
-sim.srrc_coef = SRRC(8,0.04); 
+sim.srrc_coef = SRRC(sim.srrc_ov ,1, 8); 
 sim.SRRC_en = 0;
 sim.en_optisyschannel =0;
 sim.en_read_ADS =0;
