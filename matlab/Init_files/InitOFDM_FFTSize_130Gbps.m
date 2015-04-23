@@ -1,11 +1,11 @@
-function [sim, params, MZmod,fiber,laser, lolaser, txedfa, edfa, rxedfa, PD]=  InitOFDM_FFTSize( NFFT, ovsampling, sampletime )
+function [sim, params, MZmod,fiber,laser, lolaser, txedfa, edfa, rxedfa, PD]=  InitOFDM_FFTSize_130Gbps( NFFT, ovsampling, sampletime )
 %%  Clear
 
 % clc; clear all; close all;
 Nbpsc =4;
 % NFFT =128;
 noedfanoise = 0 ;
-NUM =  256*128/NFFT -2 -5;
+NUM =  256*128/NFFT ;
 % NUM =   320*128/NFFT -2 ;
 phi =  0*54 * 64/(64^2) ;
 CD  = 17;
@@ -190,17 +190,21 @@ if ( params.NFFT == 2048 )
 %     params.NLTF =1;
 end 
 if ( params.NFFT == 1024 )
-    MaxIdx =  394 ;% 112Gbps(Nominal)
+    MaxIdx =  394-64 ;% 112Gbps(Nominal)
+    if ( MaxIdx > 384 )        
+        SubcarrierIndex1 = [6:63 65:127  129:223 225:319 321:383  385:MaxIdx] ;
+        PilotIndex1 = [  64   128   224   320   384 ];   
+        params.Pilot = [ -1  1 1 1 -1 -1 -1 1 1  -1 ];
+    else
+        SubcarrierIndex1 = [6:63 65:127  129:223 225:319 321:MaxIdx] ;
+        PilotIndex1 = [  64   128   224   320     ];   
+        params.Pilot = [ -1  1 1 1 -1 -1 -1 1 ];
+    end
     if ( MaxIdx > 480 )        
         SubcarrierIndex1 = [6:63 65:127  129:223 225:319 321:383  385:479 481:MaxIdx] ;         
         PilotIndex1 = [  64   128   224   320   384   480 ] ;   
         params.Pilot = [ -1 -1 1 1 1 -1 -1 -1 1 1 1 -1 ];
-    else
-        SubcarrierIndex1 = [6:63 65:127  129:223 225:319 321:383  385:MaxIdx] ;
-        PilotIndex1 = [  64   128   224   320   384 ];   
-        params.Pilot = [ -1  1 1 1 -1 -1 -1 1 1  -1 ];
-    end
-  
+    end  
     
     PilotIndex2 = sort(-PilotIndex1); 
     LTF_512 = [	 ...
@@ -286,15 +290,18 @@ if ( params.NFFT == 1024 )
 %     params.NLTF =1;
 end 
 if ( params.NFFT == 512 )
-    MaxIdx =  202 ;% 112Gbps(Nominal)
-    if ( MaxIdx > 240 )        
-        SubcarrierIndex1 = [6:31 33:63  65:111 113:159 161:191 193:239 241:MaxIdx] ;
-        PilotIndex1 = [  32   64  112   160   192   240 ];   
-        params.Pilot = [ -1 -1 1 1 1 -1 -1 -1 1 1 1 -1 ];
-    else
+    MaxIdx =  202 -33;% 112Gbps(Nominal)
+    if ( MaxIdx > 192 )        
+%         SubcarrierIndex1 = [6:31 33:63  65:111 113:159 161:191 193:239 241:MaxIdx] ;
+%         PilotIndex1 = [  32   64  112   160   192   240 ];   
+%         params.Pilot = [ -1 -1 1 1 1 -1 -1 -1 1 1 1 -1 ];
         SubcarrierIndex1 = [6:31 33:63  65:111 113:159 161:191 193:MaxIdx] ;
         PilotIndex1 = [  32   64  112   160   192    ];   
         params.Pilot = [ -1  1 1 1 -1 -1 -1 1 1  -1 ];
+    else
+        SubcarrierIndex1 = [6:31 33:63  65:111 113:159 161:MaxIdx] ;
+        PilotIndex1 = [  32   64  112   160        ];   
+        params.Pilot = [ -1  1 1 1 -1 -1 -1 1  ];
     end
   
     
@@ -350,7 +357,7 @@ if ( params.NFFT == 512 )
 %     params.NLTF =1;
 end 
 if (params.NFFT == 256 ) 
-    MaxIdx =105 ;
+    MaxIdx =105 -17;
     if ( MaxIdx > 96 )        
         SubcarrierIndex1 = [5:15 17:31  33:47 49:63 65:95 97:MaxIdx] ;
     else
@@ -394,7 +401,7 @@ if (params.NFFT == 256 )
 end
 
 if ( params.NFFT == 128 )
-    MaxIdx =  53;% 42;
+    MaxIdx =  53-8;% 42;
     if ( MaxIdx > 40 )        
         SubcarrierIndex1 = [3:7 9:23 25:39  41:MaxIdx] ;
     else
@@ -481,7 +488,7 @@ end
 % end
 
 if ( params.NFFT == 64 )
-    MaxIdx =27;
+    MaxIdx =27-4;
     if ( MaxIdx > 24 ) 
 %         SubcarrierIndex1 = [2:7 9:15  17:23 25:MaxIdx] ; 
         SubcarrierIndex1 = [2:7 9:15  17:MaxIdx] ;   
@@ -515,7 +522,7 @@ end
 
 
 if ( params.NFFT == 32 )
-    MaxIdx =14;
+    MaxIdx =14-2;
     if ( MaxIdx > 16 ) 
         SubcarrierIndex1 = [2:7 9:15  17:MaxIdx] ;   
         PilotIndex1 = [ 8 16 ]; 
@@ -572,7 +579,7 @@ AlphadB = 1*0.2 /km;
 GDD= CD   ;                                        % ps/nm/km
 fiber.DeltaH = 2*km  ;                              % m 
 fiber.DeltaH = 5*km ;
-fiber.FiberLength = 75  *km ;                      % Fiber length 
+fiber.FiberLength = 100  *km ;                      % Fiber length 
 % fiber.FFTSize = params.SampleperSymbol * sim.oversample *2 ;
 fiber.Overlap =2 ;
 fiber.FFTSize=0;
@@ -602,8 +609,8 @@ laser.launch_power = launch_power/4;%/params.Nstream ;  % Pol splitter
 
 lolaser.launch_power = RXLP/4;%/params.RXstream; % Pol splitter 
 
-laser.linewidth = 1 * 100 *kHz; 
-lolaser.linewidth = 1 * 100 *kHz; 
+laser.linewidth = 0.5 * 100 *kHz; 
+lolaser.linewidth = 0.5 * 100 *kHz; 
 sim.nolinewidth=0;
 laser.freqoff =0;
 lolaser.freqoff =0;
@@ -623,7 +630,7 @@ end
 txedfa.NF_dB = 4; 
 txedfa.nonoise =noedfanoise;
 
-edfa.length = 75*km; %400* km
+edfa.length = 100*km; %400* km
 edfa.hv = h*c/lambda0;
 edfa.gain_dB =AlphadB * edfa.length ;
 edfa.NF_dB = 5.5 ;   
@@ -712,7 +719,7 @@ sim.en_fsync_plot =0;
 sim.en_constellation_plot = 0;
 sim.en_cs_plot = 0;
 sim.en_disp_env =0 ;
-sim.fixed_sim = 1;
+sim.fixed_sim = 0;
 sim.srrc_coef = SRRC(sim.srrc_ov ,1, 8); 
 sim.SRRC_en = 0;
 sim.en_optisyschannel =0;

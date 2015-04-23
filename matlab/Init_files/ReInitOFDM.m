@@ -32,8 +32,7 @@ j=sqrt(-1);
 if ( sim_new.backtoback ==1 ) 
     sim_new.nlcompen = 0 ; 
     sim_new.nlpostcompen = 0;
-end
-if ( sim_new.backtoback ==1 )
+    sim_new.en_OFDE =0;
     sim_new.FiberLength = 0 *km;
 end
 if ( sim_new.nolinewidth ==1 )
@@ -174,7 +173,7 @@ params_new.RXthirdLTFidx  = LTFidx + RXNFFTSample * (1+ params_new.CPratio) * 2 
 params_new.RXfourthLTFidx = LTFidx + RXNFFTSample * (1+ params_new.CPratio) * 3 ;
 params_new.RXFFTidx = [ 1:params_new.NFFT/2, RXNFFTSample-params_new.NFFT/2+ 1:RXNFFTSample];
 %% Simulation
-sim_new.SNR = [ osnr2snr(sim.osnrin, sim.oversample/params_new.SampleTime); osnr2snr(sim.osnrin, sim.oversample/params_new.SampleTime)];
+% sim_new.SNR = [ osnr2snr(sim.osnrin, sim.oversample/params_new.SampleTime); osnr2snr(sim.osnrin, sim.oversample/params_new.SampleTime)];
 totalbits = params_new.Ncbps * params_new.NSymbol*params_new.Nstream;
 validsymbolrate = params_new.NSymbol/(params_new.NSymbol+params_new.NSTF+params_new.NLTF*params_new.Nstream+2);
 normdatarate = params_new.Ncbps  *params_new.Nstream/(params_new.SampleTime * params_new.SampleperSymbol );
@@ -207,14 +206,18 @@ params_new.totalbits =totalbits;
         0.86801716,  0.8001486 ,  0.7230036 ,  0.63954555,  0.55285177, ...
         0.46595223,  0.38167723,  0.30252315,  0.23054433,  0.16727668, ...
         0.11369652,  0.07021566,  0.03671089]; % Kaiser filter_coef with beta=5, 4.6e-3
-%     sim_new.rcfilter = [ 0.99727662,  0.9891341 ,  0.97565495, ...
-%         0.95697558,  0.93328466,  0.90482086,  0.87186995,  0.83476143, ...
-%         0.79386455,  0.74958391,  0.70235465,  0.65263731,  0.60091234, ...
-%         0.54767454,  0.49342719,  0.43867628]; % Kaiser filter_coef with beta=2 , 1e-2
-%     sim_new.rcfilter = [ 0.98432197,  0.93858367,  0.86651472, ...
-%         0.77382938,  0.66755331,  0.55522579,  0.44409171,  0.34039362,  ...
-%         0.24885213,  0.17238843,  0.11210139,  0.06747208,  0.0367369 , ...
-%         0.01735164,  0.00646526,  0.00133251]; %Kaiser filter_coef with beta=8.6
+    sim_new.rcfilter = [ 0.9958    0.9828    0.9564    0.9128  ...
+        0.8496    0.7669    0.6676    0.5572    0.4428  ...
+        0.3324    0.2331    0.1504    0.0872    0.0436    ...
+         0.0172   0.0172]; % Kaiser filter_conv L=17 with beta=5, 4.6e-3
+%     w = kaiser(33,4.0);
+    w = kaiser(33,7.0);
+%     w = hamming(33);
+%     w = blackman(33);
+%     w = bartlett(33);
+    sim_new.rcfilter=w(18:33); % 
+%     w = bartlett(35);
+%     sim_new.rcfilter=w(19:34);
     p = [p(1:Nt), ones(1, params_new.NFFT * (1 + params.CPratio-Nt)), p(Nt+1:2*Nt)]; % Add ones in middle 
 %% Fixed simulation
 
@@ -306,7 +309,10 @@ end
 %     sim_new.ofde =1;
 % end
 sim_new.span = sim_new.FiberLength/ edfa_new.length;
-
+if ( ceil(sim_new.span) ~= sim_new.span  )
+    error(['Fiber length', num2str(sim_new.FiberLength/km), ...
+       ' km is not multiples of a span', num2str(edfa_new.length/km), ' km.']);
+end
 sim_new.fiber = fiber_new;
 sim_new.rxedfa = rxedfa_new;
 sim_new.edfa = edfa_new;
@@ -351,7 +357,9 @@ if ( sim.en_disp_env )
     disp2( logfile,['CFO type ', num2str(  sim_new.cfotype)] ); 
     disp2( logfile,['Symbol sync search ', num2str(  sim_new.en_find_sync)] );
     disp2( logfile,['CS sync search ', num2str(  sim_new.en_find_cs)] );
+    if ( sim.en_OFDE == 1 )
     disp2( logfile,['OFDE size ', num2str( params_new.NOFDE )]);        
+    end
     disp2(logfile,datestr(now,'HH:MM /mm/dd/yy'))
 
 

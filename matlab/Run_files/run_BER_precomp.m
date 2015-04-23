@@ -1,12 +1,12 @@
 %% Initialize 
-tic;
+% tic;
 MHz = 1e6;
 mW =1e-3;
 if ( sim_mode ~= 0 )
     
     [sim, params, MZmod,fiber,laser, iolaser, txedfa, edfa, rxedfa, PD]= ...
-        InitOFDM_11Sept(NFFT, 1,SampleTime );
-%     InitOFDM_FFTSize(NFFT, 1,SampleTime );
+        InitOFDM_FFTSize_130Gbps(NFFT, 1,SampleTime );
+%     InitOFDM_11Sept(NFFT, 1,SampleTime );InitOFDM_11Sept
 
     sim.tone = tone * params.NFFT/128;
     sim.MAXSIM= maxsim;
@@ -17,8 +17,9 @@ if ( sim_mode ~= 0 )
     sim.nonoise = nonoise;
     sim.nolinewidth=nolinewidth;
     sim.en_AWGN = en_AWGN ;
-    snrin = osnr2snr(sim.osnrin, sim.oversample/params.SampleTime);
-    sim.SNR = [ snrin; snrin;];
+%     snrin = osnr2snr(sim.osnrin, sim.oversample/params.SampleTime);
+%     sim.SNR = [ snrin; snrin;];
+    sim.SNR =[SNR_dB; SNR_dB;];
     sim.backtoback = b2b;
     sim.FiberLength = FiberLength  ;
     sim.mode = sim_mode; % 0: single simulation 1 : length, 2: SNR  4: bit (fixed sim) 
@@ -31,8 +32,8 @@ if ( sim_mode ~= 0 )
     params.Nbpsc = Nbpsc;    
     params.NOFDE = NOFDE;
     sim.osnrin = osnrin;    
-    sim.syncpoint=syncpoint;    
-%     sim.syncpoint=params.NFFT * params.CPratio /2;  
+%     sim.syncpoint=syncpoint;    
+    sim.syncpoint=params.NFFT * params.CPratio /2;  
     sim.txLPF_en =0 ;
   
     rxedfa.nonoise =noedfanoise;
@@ -43,7 +44,10 @@ if ( sim_mode ~= 0 )
 %     sim.en_find_cs=1;
 %    txedfa.gain_dB =  gain_dB; 
 %    params.NSymbol = 50;
-% fiber.Npol =params.RXstream ;   
+% fiber.Npol =params.RXstream ; 
+    laser.linewidth = LineWidth *kHz;
+    lolaser.linewidth = LineWidth *kHz;
+    sim.fixed_sim = fixed_sim;
     run('../Optisys/init_optisys.m');
 end 
 [sim, params, fiber,laser,lolaser,txedfa, edfa, rxedfa ]=  ...
@@ -98,9 +102,10 @@ for SNRsim=1:length(X_coor)
         sim.osnrin =X_coor(SNRsim);
         snrin = osnr2snr(sim.osnrin, sim.oversample/params.SampleTime);
         sim.SNR = [ snrin; snrin;];
+        warning('OSNR dB is not correct');
     end
     if ( sim.mode == 4 )
-        sim.SNR =[X_coor(SNRsim);X_coor(SNRsim);];
+        sim.SNR =[X_coor(SNRsim);X_coor(SNRsim);] ;
     end
     if ( sim.mode == 1 || sim.mode == 5  ) 
         sim.FiberLength  = (X_coor(SNRsim))*km;  
@@ -129,7 +134,7 @@ for SNRsim=1:length(X_coor)
     
     for numsim=1:sim.MAXSIM
         
-        dataf = GenStim(params.totalbits, sim, 'prbs15.txt', dataf_t, ...
+        dataf = GenStim(params, sim, 'prbs15.txt', dataf_t, ...
                         mod((numsim-1)*params.totalbits, 2^15-1) ) ; 
         %=================  Transmitter =================        
         ofdmout=  TxMain( dataf, preambleout, sim, params,  ...
@@ -190,7 +195,7 @@ for SNRsim=1:length(X_coor)
              ' BER:',  num2str(totbiterror/( numsim *params.totalbits)), ...
             ' MSEE:',  num2str(SEE/numsim), ...
             ' CurSim: ', num2str(X_coor(SNRsim)) ] ;   
-            disp2(logfile, str);
+%             disp2(logfile, str);
         end   
 
         if ( next_sim( sim, sum(totbiterror), numsim,maxsim, bit_err_sim ,SNRsim) == 1 )
@@ -207,8 +212,7 @@ for SNRsim=1:length(X_coor)
     str = ['FiberLength :', num2str( sim.FiberLength/km ), ' km, sim.precom_CD  ', ...
     num2str( sim.precom_CD ), ...
         ' BER:',  num2str(BER(SNRsim)), ...
-        ' MSEE:',  num2str(MSEE(SNRsim)), ...
-        ' Q:',  num2str(Q(SNRsim)), ...
+        ' Q:',  num2str(BER2Q(BER(SNRsim))), ...
         ' CurSim: ', num2str(X_coor(SNRsim)) ] ;  
     disp2( logfile, str);
 
@@ -243,4 +247,4 @@ end
 
 % createfigure(commonphase,H_modified,  params, frame,sim, '' )
 % disp2(logfile,datestr(now,'HH:MM /mm/dd/yy'));
-toc;
+% toc;

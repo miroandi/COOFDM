@@ -40,10 +40,12 @@ disp2(logfile, ' ');
     disp2( logfile,['MIMO emul: ', num2str( params.MIMO_emul )] );
     disp2( logfile,['OFDE : ', num2str( sim.en_OFDE ),' OFDE size: ', num2str( params.NOFDE ),' ofde coef : ', num2str( sim.ofde )] );
     disp2( logfile,['SPM : ', num2str( sim.nlpostcompen )] );
-     
+      
     if ( sim.fixed_sim == 1 ) 
-        disp2( logfile,['CS in bit : ', num2str( sim.CSInbit )] );
-        disp2( logfile,['CS Mul bit : ', num2str( sim.CSMulOutbit )] );
+        disp2( logfile,['ADC  bit    : ', num2str( sim.ADCbit )] );
+        disp2( logfile,['DAC  bit    : ', num2str( sim.DACbit )] );
+        disp2( logfile,['CS in bit   : ', num2str( sim.CSInbit )] );
+        disp2( logfile,['CS Mul bit  : ', num2str( sim.CSMulOutbit )] );
         disp2( logfile,['CS Sum out bit: ', num2str( sim.CSSumOutbit )] );
         disp2( logfile,['CFO in (Frac.) bit : ', num2str( sim.CFOinbit  )] );
         disp2( logfile,['CFO mul (Frac.) bit : ', num2str( sim.CFOMulOutbit )] );

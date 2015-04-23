@@ -32,7 +32,7 @@ function [ovosignal, phase_noise] =  elec2opt1( esignal, laser, MZmod, txedfa, s
     if (sim.nonoise == 1 || sim.en_AWGN == 0 )
         noisyoptoofdmout_pz=ovosignal;
     else        
-        noise=AddAWGN(ovosignal, sim.SNR , sim);
+        noise=AddAWGN(ovosignal, sim.SNR  -  (10* log10( sim.oversample)), sim);
         noisyoptoofdmout_pz = ovosignal+noise;
     end
     ovosignal = noisyoptoofdmout_pz;

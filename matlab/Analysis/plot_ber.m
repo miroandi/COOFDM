@@ -17,13 +17,18 @@ function  plot_ber( plot_mode, sim, params, X_coor, Y1, Y2, edfa, laser,color_va
     shape_str =[shape(shape_var) '-'];
     legend2 = [ var_str,  num2str(var )];
     legend_str='';
-    if ( sim.mode ==  1 )     legend_str =[ legend1,', ', legend2 ]; end    
-    if ( sim.mode ==  2 )     legend_str =[ legend1, ', ', legend2 ]; end    
-    if ( sim.mode ==  4 )     legend_str =[ legend1, ', ', legend2 ]; end    
-    if ( sim.mode ==  6 )     legend_str =[ legend1,', ' , legend2   ]; end
-    if ( sim.mode ==  5 )     color_str =couleur(sim.subband+1); end
+%     if ( sim.mode ==  1 )     legend_str =[ legend1,', ', legend2 ]; end    
+%     if ( sim.mode ==  2 )     legend_str =[ legend1, ', ', legend2 ]; end    
+%     if ( sim.mode ==  3 )     legend_str =[ legend1, ', ', legend2 ]; end  
+%     if ( sim.mode ==  4 )     legend_str =[ legend1, ', ', legend2 ]; end    
+%     if ( sim.mode ==  6 )     legend_str =[ legend1,', ' , legend2   ]; end
+   
+    if ( sim.mode ==  5 )    
+        color_str =couleur(sim.subband+1); 
+    else
+         legend_str =[ legend1,', ' , legend2   ]; 
+    end
     
-    hold on;
     
     tt =1;
     if ( sim.mode == 6 )   tt=MHz *params.SampleTime*144; end  
@@ -46,6 +51,19 @@ function  plot_ber( plot_mode, sim, params, X_coor, Y1, Y2, edfa, laser,color_va
              'Display', legend_str);
          ylabel('Q ') ; 
     end
+    if ( plot_mode == 4 )
+        semilogx( tt* X_coor, BER2Q(Y1(1:length(X_coor))), ...   
+            [ color_str shape_str ], ...
+            'MarkerFaceColor', color_str, ...
+             'Display', legend_str);
+    end
+    if ( plot_mode == 5 )
+        plot( tt* X_coor, BER2Q(Y1(1:length(X_coor))), ...   
+            [ color_str shape_str ], ...
+            'MarkerFaceColor', color_str, ...
+             'Display', legend_str);
+    end
+
 %     xlabel1 =' FiberLengths ' ; 
     ylabel(' (BER) ') ; xlabel1 =' FiberLengths ' ; 
     str1='';
@@ -64,4 +82,16 @@ function  plot_ber( plot_mode, sim, params, X_coor, Y1, Y2, edfa, laser,color_va
     end
     xlabel(xlabel1);
     title(['BER vs ' xlabel1 'with a given ' str1,str2]);
+    
+    
+    if (  plot_mode == 4  )
+%         legend('show') 
+        box on; grid on;
+        xlim( [X_coor(1)-2 X_coor(end)+20])
+        set(gca, 'XTick', X_coor )
+        title( 'BER versus FFT size ');
+        xlabel('FFT size')
+        ylabel('Q factor')  
+    end 
+    hold on;
 end
